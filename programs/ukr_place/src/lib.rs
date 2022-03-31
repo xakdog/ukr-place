@@ -1,9 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program;
-use anchor_lang::solana_program::system_instruction::SystemInstruction;
 use canvas_tile;
 use canvas_tile::helpers::count_painted_pixels;
-use std::str::FromStr;
 
 declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 
@@ -64,23 +62,12 @@ pub mod ukr_place {
             canvas: ctx.accounts.tile.to_account_info(),
         };
 
-        // TODO: generalize signing procedure
-        {
-            let seed = position.seed();
-            let seed_bytes = seed.as_bytes();
+        let (seed, bump) = position.generate_signature_seeds(ctx.program_id);
+        let authority_seeds = [seed.as_bytes(), &[bump]];
+        let signer_seeds = [&authority_seeds[..]];
 
-            let (authority, authority_bump) =
-                Pubkey::find_program_address(&[seed_bytes], ctx.program_id);
-            let authority_seeds = &[&seed_bytes[..], &[authority_bump]];
-            let signer_seeds = [&authority_seeds[..]];
-
-            if !cpi_accounts.canvas.key.eq(&authority) {
-                return Err(error!(ErrorCode::InvalidTileAccount));
-            }
-
-            let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts).with_signer(&signer_seeds);
-            canvas_tile::cpi::draw_over(cpi_ctx, pixels)?;
-        }
+        let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts).with_signer(&signer_seeds);
+        canvas_tile::cpi::draw_over(cpi_ctx, pixels)?;
 
         Ok(())
     }
@@ -89,11 +76,13 @@ pub mod ukr_place {
         let user = ctx.accounts.user.to_account_info();
         let canvas = ctx.accounts.tile.to_account_info();
         let cpi_program = ctx.accounts.tile_program.to_account_info();
+        let owner_program = ctx.accounts.owner_program.to_account_info();
         let system_program = ctx.accounts.system_program.to_account_info();
 
         let cpi_accounts = canvas_tile::cpi::accounts::Initialize {
             canvas,
             user,
+            owner_program,
             system_program,
         };
 
@@ -102,25 +91,13 @@ pub mod ukr_place {
             y: position.y,
         };
 
-        // TODO: generalize signing procedure
-        {
-            let seed = position.seed();
-            let seed_bytes = seed.as_bytes();
+        let (seed, bump) = position.generate_signature_seeds(ctx.program_id);
+        let authority_seeds = [seed.as_bytes(), &[bump]];
+        let signer_seeds = [&authority_seeds[..]];
 
-            let (authority, authority_bump) =
-                Pubkey::find_program_address(&[seed_bytes], ctx.program_id);
-            let authority_seeds = &[&seed_bytes[..], &[authority_bump]];
-            let signer_seeds = [&authority_seeds[..]];
+        let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts).with_signer(&signer_seeds);
 
-            if !cpi_accounts.canvas.key.eq(&authority) {
-                return Err(error!(ErrorCode::InvalidTileAccount));
-            }
-
-            let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts)
-                .with_signer(&signer_seeds);
-
-            canvas_tile::cpi::initialize(cpi_ctx, pos)?;
-        }
+        canvas_tile::cpi::initialize(cpi_ctx, pos)?;
 
         Ok(())
     }
@@ -185,20 +162,30 @@ pub struct BuyPixels<'info> {
 }
 
 #[derive(Accounts)]
+#[instruction(position: Point2d)]
 pub struct EnsureTile<'info> {
-    // #[account(seeds = [b"canvas-tile-0:16"], bump)]
-    #[account(mut)]
-    /// CHECK: should be safe. PDA key will be generated and compared again.
+    /// CHECK: should be safe. PDA key will be checked by CanvasTile.
+    #[account(
+        mut,
+        seeds = [position.seed().as_bytes()],
+        bump
+    )]
     pub tile: UncheckedAccount<'info>,
     pub tile_program: Program<'info, canvas_tile::program::CanvasTile>,
+    pub owner_program: Program<'info, crate::program::UkrPlace>,
     #[account(mut)]
     pub user: Signer<'info>,
     pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
+#[instruction(position: Point2d)]
 pub struct PaintPixels<'info> {
-    #[account(mut)]
+    #[account(
+        mut,
+        seeds = [position.seed().as_bytes()],
+        bump
+    )]
     pub tile: Account<'info, canvas_tile::CanvasTile>,
     pub tile_program: Program<'info, canvas_tile::program::CanvasTile>,
     #[account(mut)]
@@ -222,6 +209,15 @@ pub struct Point2d {
 impl Point2d {
     pub fn seed(&self) -> String {
         format!("canvas-tile-{}:{}", self.x, self.y)
+    }
+
+    pub fn generate_signature_seeds(&self, program_id: &Pubkey) -> (String, u8) {
+        let seed = self.seed();
+        let seed_bytes = seed.as_bytes();
+
+        let (_authority, authority_bump) = Pubkey::find_program_address(&[seed_bytes], program_id);
+
+        (seed, authority_bump)
     }
 }
 

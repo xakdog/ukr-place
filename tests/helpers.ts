@@ -46,7 +46,7 @@ export class Helpers {
     const program = anchor.workspace.UkrPlace as Program<UkrPlace>;
 
     const sig = await program.methods
-      .buyPixels(amount)
+      .buyPixels(amount as any)
       .accounts({
         charity,
         user: payer.publicKey,
@@ -73,10 +73,10 @@ export class Helpers {
     const tileProgram = anchor.workspace.CanvasTile as Program<CanvasTile>;
 
     const seed = `canvas-tile-${position.x}:${position.y}`;
-    const [pda, bump] = await PublicKey.findProgramAddress([seed], program.programId);
+    const [pda,] = await PublicKey.findProgramAddress([seed], program.programId);
 
     const sig = await program.methods
-      .paintPixels(position, image)
+      .paintPixels(position as any, image as any)
       .accounts({
         tile: pda,
         tileProgram: tileProgram.programId,
@@ -99,10 +99,11 @@ export class Helpers {
     const [pda, bump] = await PublicKey.findProgramAddress([seed], program.programId);
 
     const sig = await program.methods
-      .ensureTile(point)
+      .ensureTile(point as any)
       .accounts({
         tile: pda,
         tileProgram: anchor.workspace.CanvasTile.programId,
+        ownerProgram: anchor.workspace.UkrPlace.programId,
         user: feePayer.publicKey,
         systemProgram: anchor.web3.SystemProgram.programId,
       })
@@ -117,10 +118,7 @@ export class Helpers {
   public async getEveryTile() {
     const program = anchor.workspace.CanvasTile as Program<CanvasTile>;
 
-    const accounts = await this.jsonRpc.getParsedProgramAccounts(program.programId);
-
-    // TODO: do something meaningful
-    return accounts;
+    return this.jsonRpc.getParsedProgramAccounts(program.programId);
   }
 
   public async getCanvasData(point: Point2d) {
@@ -128,7 +126,7 @@ export class Helpers {
     const CanvasTile = anchor.workspace.CanvasTile as Program<CanvasTile>;
 
     const seed = `canvas-tile-${point.x}:${point.y}`;
-    const [pda, bump] = await PublicKey.findProgramAddress([seed], UrkPlace.programId);
+    const [pda,] = await PublicKey.findProgramAddress([seed], UrkPlace.programId);
 
     return CanvasTile.account.canvasTile.fetch(pda);
   }
@@ -136,16 +134,14 @@ export class Helpers {
   public async getCanvasPixels(point: Point2d) {
     const data = await this.getCanvasData(point);
 
-    const formatPixels = (pixels: number[][]) => {
+    const pixels = [...data.pixels];
+    const prettyPrint = () => {
       const grid = data.pixels.map(
         row => row.map(val => val.toString().padStart(3)).join(',')
       );
 
       return grid.join('\n');
     }
-
-    const pixels = [...data.pixels];
-    const prettyPrint = () => formatPixels(pixels);
 
     return { pixels, prettyPrint, data };
   }

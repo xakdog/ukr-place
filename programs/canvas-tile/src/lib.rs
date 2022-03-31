@@ -1,7 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_lang::solana_program;
 use std::mem::size_of;
-use std::str::FromStr;
 
 declare_id!("EJhGaMkY2tkdpZ6FqzZ5TF1CsUmtAXqt7PP2rp5wQ819");
 
@@ -14,7 +12,17 @@ pub mod canvas_tile {
     use super::*;
 
     pub fn initialize(ctx: Context<Initialize>, position: Point2d) -> Result<()> {
+        let owner = &ctx.accounts.owner_program;
+        let canvas_addr = ctx.accounts.canvas.key();
+        let (pda, _bump, _seed) = position.program_address(owner.key);
+
+        // TODO: validate that coordinates are correct
+        if !pda.eq(&canvas_addr) {
+            return Err(error!(ErrorCode::InvalidTileAddress));
+        }
+
         ctx.accounts.canvas.position = position;
+        ctx.accounts.canvas.owner = ctx.accounts.owner_program.key();
 
         Ok(())
     }
@@ -66,25 +74,31 @@ fn save_painted_pixels(
 #[derive(Accounts)]
 #[instruction(position: Point2d)]
 pub struct Initialize<'info> {
-    #[account(
-        init, payer = user, space = 8 + ACCOUNT_BYTES,
-        // TODO: make it work
-        // seeds=[position.seed().as_bytes()], bump
-    )]
+    #[account(init, signer, payer = user, space = 8 + ACCOUNT_BYTES)]
     pub canvas: Account<'info, CanvasTile>,
     #[account(mut)]
     pub user: Signer<'info>,
     pub system_program: Program<'info, System>,
+    /// CHECK: All good, `ErrorCode::InvalidTileAddress` thrown if manual check failed
+    #[account(executable)]
+    pub owner_program: AccountInfo<'info>,
 }
 
 #[derive(Accounts)]
 pub struct CanvasData<'info> {
-    #[account(mut)]
+    #[account(
+        mut,
+        signer,
+        seeds=[canvas.position.seed().as_bytes()],
+        seeds::program=canvas.owner.key(),
+        bump,
+    )]
     pub canvas: Account<'info, CanvasTile>,
 }
 
 #[account]
 pub struct CanvasTile {
+    pub owner: Pubkey,
     pub position: Point2d,
     pub times_modified: u32,
     pub last_modified: i64,
@@ -101,4 +115,21 @@ impl Point2d {
     pub fn seed(&self) -> String {
         format!("canvas-tile-{}:{}", self.x, self.y)
     }
+
+    pub fn program_address(&self, program_id: &Pubkey) -> (Pubkey, u8, String) {
+        let seed = self.seed();
+        let seed_bytes = seed.as_bytes();
+
+        let (authority, authority_bump) =
+            Pubkey::find_program_address(&[seed_bytes], program_id);
+
+        (authority, authority_bump, seed)
+    }
 }
+
+#[error_code]
+pub enum ErrorCode {
+    #[msg("Provided pixel tile address is incorrect")]
+    InvalidTileAddress,
+}
+
