@@ -99,7 +99,7 @@ export class Helpers {
     const [pda, bump] = await PublicKey.findProgramAddress([seed], program.programId);
 
     const sig = await program.methods
-      .ensureTile(point as any)
+      .createTile(point as any)
       .accounts({
         tile: pda,
         tileProgram: anchor.workspace.CanvasTile.programId,

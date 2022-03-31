@@ -43,36 +43,7 @@ pub mod ukr_place {
         Ok(())
     }
 
-    pub fn paint_pixels(
-        ctx: Context<PaintPixels>,
-        position: Point2d,
-        pixels: [[u8; CANVAS_SIZE]; CANVAS_SIZE],
-    ) -> Result<()> {
-        let pixels_count = count_painted_pixels(pixels);
-        let pixel_wallet = &mut ctx.accounts.pixel_wallet;
-
-        if pixel_wallet.available_pixels < pixels_count {
-            return Err(error!(ErrorCode::NotEnoughPixels));
-        }
-
-        pixel_wallet.available_pixels -= pixels_count;
-
-        let cpi_program = ctx.accounts.tile_program.to_account_info();
-        let cpi_accounts = canvas_tile::cpi::accounts::CanvasData {
-            canvas: ctx.accounts.tile.to_account_info(),
-        };
-
-        let (seed, bump) = position.generate_signature_seeds(ctx.program_id);
-        let authority_seeds = [seed.as_bytes(), &[bump]];
-        let signer_seeds = [&authority_seeds[..]];
-
-        let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts).with_signer(&signer_seeds);
-        canvas_tile::cpi::draw_over(cpi_ctx, pixels)?;
-
-        Ok(())
-    }
-
-    pub fn ensure_tile(ctx: Context<EnsureTile>, position: Point2d) -> Result<()> {
+    pub fn create_tile(ctx: Context<CreateTile>, position: Point2d) -> Result<()> {
         let user = ctx.accounts.user.to_account_info();
         let canvas = ctx.accounts.tile.to_account_info();
         let cpi_program = ctx.accounts.tile_program.to_account_info();
@@ -98,6 +69,35 @@ pub mod ukr_place {
         let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts).with_signer(&signer_seeds);
 
         canvas_tile::cpi::initialize(cpi_ctx, pos)?;
+
+        Ok(())
+    }
+
+    pub fn paint_pixels(
+        ctx: Context<PaintPixels>,
+        position: Point2d,
+        pixels: [[u8; CANVAS_SIZE]; CANVAS_SIZE],
+    ) -> Result<()> {
+        let pixels_count = count_painted_pixels(pixels);
+        let pixel_wallet = &mut ctx.accounts.pixel_wallet;
+
+        if pixel_wallet.available_pixels < pixels_count {
+            return Err(error!(ErrorCode::NotEnoughPixels));
+        }
+
+        pixel_wallet.available_pixels -= pixels_count;
+
+        let cpi_program = ctx.accounts.tile_program.to_account_info();
+        let cpi_accounts = canvas_tile::cpi::accounts::CanvasData {
+            canvas: ctx.accounts.tile.to_account_info(),
+        };
+
+        let (seed, bump) = position.generate_signature_seeds(ctx.program_id);
+        let authority_seeds = [seed.as_bytes(), &[bump]];
+        let signer_seeds = [&authority_seeds[..]];
+
+        let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts).with_signer(&signer_seeds);
+        canvas_tile::cpi::draw_over(cpi_ctx, pixels)?;
 
         Ok(())
     }
@@ -163,7 +163,7 @@ pub struct BuyPixels<'info> {
 
 #[derive(Accounts)]
 #[instruction(position: Point2d)]
-pub struct EnsureTile<'info> {
+pub struct CreateTile<'info> {
     /// CHECK: should be safe. PDA key will be checked by CanvasTile.
     #[account(
         mut,
