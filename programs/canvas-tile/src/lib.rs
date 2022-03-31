@@ -1,12 +1,13 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program;
 use std::mem::size_of;
+use std::str::FromStr;
 
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnQ");
+declare_id!("EJhGaMkY2tkdpZ6FqzZ5TF1CsUmtAXqt7PP2rp5wQ819");
 
 const CANVAS_SIZE: usize = 16;
-const TRANSPARENT_COLOR: u8 = u8::MAX;
-const ACCOUNT_BYTES: usize = size_of::<CanvasTile>();
+const TRANSPARENT_COLOR: u8 = 0;
+pub const ACCOUNT_BYTES: usize = size_of::<CanvasTile>();
 
 #[program]
 pub mod canvas_tile {
@@ -22,7 +23,6 @@ pub mod canvas_tile {
         ctx: Context<CanvasData>,
         pixels: [[u8; CANVAS_SIZE]; CANVAS_SIZE],
     ) -> Result<()> {
-        // TODO: make sure only trusted program could call it
         let now = Clock::get()?;
         let canvas = &mut ctx.accounts.canvas;
 
@@ -38,7 +38,7 @@ pub mod canvas_tile {
 pub mod helpers {
     use super::*;
 
-    pub fn count_painted_pixels(pixels: [[u8; CANVAS_SIZE]; CANVAS_SIZE]) -> usize {
+    pub fn count_painted_pixels(pixels: [[u8; CANVAS_SIZE]; CANVAS_SIZE]) -> u64 {
         pixels
             .iter()
             .flat_map(|row| row.iter())
@@ -64,8 +64,13 @@ fn save_painted_pixels(
 }
 
 #[derive(Accounts)]
+#[instruction(position: Point2d)]
 pub struct Initialize<'info> {
-    #[account(init, payer = user, space = 8 + ACCOUNT_BYTES)]
+    #[account(
+        init, payer = user, space = 8 + ACCOUNT_BYTES,
+        // TODO: make it work
+        // seeds=[position.seed().as_bytes()], bump
+    )]
     pub canvas: Account<'info, CanvasTile>,
     #[account(mut)]
     pub user: Signer<'info>,
@@ -88,6 +93,12 @@ pub struct CanvasTile {
 
 #[derive(AnchorSerialize, AnchorDeserialize, Copy, Clone, Default, Debug)]
 pub struct Point2d {
-    pub x: u32,
-    pub y: u32,
+    pub x: i32,
+    pub y: i32,
+}
+
+impl Point2d {
+    pub fn seed(&self) -> String {
+        format!("canvas-tile-{}:{}", self.x, self.y)
+    }
 }
