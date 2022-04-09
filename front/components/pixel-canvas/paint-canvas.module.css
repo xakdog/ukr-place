@@ -1,0 +1,26 @@
+.container {
+    width: 100vw;
+    height: 100vh;
+    height: var(--app-height);
+
+    overflow: hidden;
+}
+
+.content {
+    position: relative;
+    user-select: none;
+    touch-action: none;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.image {
+    transform: scale(1);
+    image-rendering: pixelated;
+}
+
+.mapOverlay {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+}
