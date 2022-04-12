@@ -1,9 +1,20 @@
+import {useState} from "react";
 import type { NextPage } from 'next'
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import Head from 'next/head';
+
 import PixelCanvas from "../components/pixel-canvas/pixel-canvas";
+import PaletteBar from "../components/palette-bar/palette-bar";
+import PixelCoordinates from "../components/pixel-coordinates/pixel-coordinates";
+import PixelPlaceBtn from "../components/pixel-place-btn/pixel-place-btn";
+import {FakeSyncer} from "../components/live-canvas/fake-syncer";
+import {useLiveCanvasSync} from "../components/live-canvas/use-live-canvas-sync";
+
+const createSyncer = () => new FakeSyncer;
 
 const Home: NextPage = () => {
+  useLiveCanvasSync(createSyncer);
+  const [isEditing, setIsEditing] = useState(true);
+
   return (
     <>
       <Head>
@@ -14,7 +25,10 @@ const Home: NextPage = () => {
       </Head>
 
       <main style={{ backgroundColor: '#121213' }}>
-        <PixelCanvas />
+        <PixelCanvas onClick={() => setIsEditing(!isEditing)} />
+        {isEditing && <PaletteBar />}
+        {isEditing && <PixelCoordinates />}
+        {isEditing && <PixelPlaceBtn />}
       </main>
 
       {/*<footer className={styles.footer}>*/}
@@ -31,6 +45,6 @@ const Home: NextPage = () => {
       {/*</footer>*/}
     </>
   )
-}
+};
 
-export default Home
+export default Home;

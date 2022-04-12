@@ -24,3 +24,11 @@
     pointer-events: none;
     z-index: 1;
 }
+
+.pixel {
+    height: 1px;
+    width: 1px;
+    position: absolute;
+    background: red;
+    z-index: 1;
+}

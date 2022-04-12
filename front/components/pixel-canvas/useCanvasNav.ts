@@ -1,6 +1,14 @@
 import {Vector} from "vecti";
+import {useSetRecoilState} from "recoil";
 import {MutableRefObject, useCallback, useEffect, useMemo} from "react";
 import {createUseGesture, dragAction, pinchAction, wheelAction} from "@use-gesture/react";
+
+import {canvasPosState} from "../../state/canvas-pos.atom";
+
+type canvasNavArgs = {
+  onClick(): void;
+  container: MutableRefObject<HTMLElement | undefined>;
+}
 
 const IMAGE_WIDTH = 1280;
 const IMAGE_HEIGHT = 912;
@@ -8,7 +16,7 @@ const IMAGE_HEIGHT = 912;
 const scaleBounds = (val: number) => Math.min(80, Math.max(val, 0.2));
 const useGesture = createUseGesture([dragAction, pinchAction, wheelAction]);
 
-export const useCanvasNav = (container: MutableRefObject<HTMLElement | undefined>) => {
+export const useCanvasNav = ({ container, onClick }: canvasNavArgs) => {
   if (typeof window === 'undefined') {
     return;
   }
@@ -18,8 +26,10 @@ export const useCanvasNav = (container: MutableRefObject<HTMLElement | undefined
     canvas: new Vector(IMAGE_WIDTH / 2, IMAGE_HEIGHT / 2),
     offset: new Vector(window.innerWidth / 2, window.innerHeight / 2),
     mouse: new Vector(window.innerWidth / 2, window.innerHeight / 2),
+    startOffset: new Vector(0, 0),
   }), []);
 
+  const setGlobalPos = useSetRecoilState(canvasPosState);
   const updateValues = useCallback(() => {
     const target = container.current;
 
@@ -31,7 +41,14 @@ export const useCanvasNav = (container: MutableRefObject<HTMLElement | undefined
     target.style.opacity = '1';
     target.style.transformOrigin = '0 0';
     target.style.transform = `translate(${real.x}px, ${real.y}px) scale(${state.scale})`;
-  }, [container, state]);
+
+    setGlobalPos({
+      vector: state.canvas,
+      outOfBounds:
+        state.canvas.x < 0 || state.canvas.x > IMAGE_WIDTH ||
+        state.canvas.y < 0 || state.canvas.y > IMAGE_HEIGHT,
+    });
+  }, [container, setGlobalPos, state]);
 
   useEffect(() => {
     const target = container.current;
@@ -50,6 +67,21 @@ export const useCanvasNav = (container: MutableRefObject<HTMLElement | undefined
       state.canvas = state.canvas.subtract(delta.multiply(1 / state.scale));
 
       updateValues();
+    },
+    onDragStart: ({ offset: [ox, oy] }) => {
+      state.startOffset = new Vector(ox, oy);
+    },
+    onDragEnd: ({ offset: [ox, oy], target }) => {
+      const offset = new Vector(ox, oy);
+      const delta = state.startOffset.subtract(offset);
+
+      if (target !== container.current?.parentNode)
+        return;
+
+      if (delta.length() > 1)
+        return;
+
+      onClick();
     },
     onPinch: ({ offset: [dScale, _rotation] }) => {
       state.scale = scaleBounds(dScale);

@@ -9,19 +9,22 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@math.gl/core": "^3.5.7",
     "@use-gesture/react": "^10.2.11",
     "next": "12.1.4",
     "react": "18.0.0",
     "react-dom": "18.0.0",
+    "recoil": "^0.7.0",
     "vecti": "^2.0.12"
   },
   "devDependencies": {
     "@types/node": "17.0.23",
     "@types/react": "17.0.43",
     "@types/react-dom": "17.0.14",
+    "autoprefixer": "^10.4.4",
     "eslint": "8.12.0",
     "eslint-config-next": "12.1.4",
+    "postcss": "^8.4.12",
+    "tailwindcss": "^3.0.23",
     "typescript": "4.6.3"
   }
 }
