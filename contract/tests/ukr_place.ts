@@ -5,12 +5,12 @@ import { Program } from "@project-serum/anchor";
 import { UkrPlace } from "../target/types/ukr_place";
 import { Helpers } from "./helpers";
 
-const PRICE_PER_PIXEL = 25_000_000;
+const PRICE_PER_PIXEL = 2_500_000;
 const DONATE_PUBLIC_KEY = new PublicKey("66pJhhESDjdeBBDdkKmxYYd7q6GUggYPWjxpMKNX39KV");
 
 describe("ukr_place", () => {
   // Configure the client to use the local cluster.
-  anchor.setProvider(anchor.Provider.env());
+  anchor.setProvider(anchor.AnchorProvider.env());
 
   const program = anchor.workspace.UkrPlace as Program<UkrPlace>;
   const jsonRpc = program.provider.connection;

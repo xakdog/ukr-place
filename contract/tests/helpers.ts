@@ -86,7 +86,7 @@ export class Helpers {
         pixelWallet: pixels.publicKey,
         systemProgram: anchor.web3.SystemProgram.programId,
       })
-      .signers([payer])
+      .signers([pixels, payer])
       .rpc();
 
     await this.jsonRpc.confirmTransaction(sig);

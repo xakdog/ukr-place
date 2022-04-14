@@ -1,7 +1,9 @@
 [features]
 seeds = false
 [programs.localnet]
-ukr_place = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+ukr_place = "GZrHAQcRuTB6YcQLhErk1rkycMXYFvZoSPNx7ui3bwNM"
+[programs.devnet]
+ukr_place = "GZrHAQcRuTB6YcQLhErk1rkycMXYFvZoSPNx7ui3bwNM"
 
 [registry]
 url = "https://anchor.projectserum.com"
@@ -12,3 +14,4 @@ wallet = "/Users/xakdog/.config/solana/id.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+copy-idl = "mkdir -p ../front/types/idl && cp target/idl/ukr_place.json ../front/types/idl/ukr_place.json"

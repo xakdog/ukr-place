@@ -3,7 +3,7 @@ use anchor_lang::solana_program;
 use canvas_tile;
 use canvas_tile::helpers::count_painted_pixels;
 
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+declare_id!("GZrHAQcRuTB6YcQLhErk1rkycMXYFvZoSPNx7ui3bwNM");
 
 macro_rules! eligible_charities {
     () => {
@@ -15,7 +15,7 @@ macro_rules! eligible_charities {
 }
 
 const CANVAS_SIZE: usize = 16;
-const PRICE_PER_PIXEL: u64 = 25_000_000; // lamports
+const PRICE_PER_PIXEL: u64 = 2_500_000; // lamports
 
 #[program]
 pub mod ukr_place {
@@ -188,7 +188,7 @@ pub struct PaintPixels<'info> {
     )]
     pub tile: Account<'info, canvas_tile::CanvasTile>,
     pub tile_program: Program<'info, canvas_tile::program::CanvasTile>,
-    #[account(mut)]
+    #[account(mut, signer)]
     pub pixel_wallet: Account<'info, PixelWallet>,
     #[account(mut)]
     pub user: Signer<'info>,

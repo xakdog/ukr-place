@@ -79,7 +79,7 @@ pub struct Initialize<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
     pub system_program: Program<'info, System>,
-    /// CHECK: All good, `ErrorCode::InvalidTileAddress` thrown if manual check failed
+    /// CHECK: `ErrorCode::InvalidTileAddress` thrown if manual check failed
     #[account(executable)]
     pub owner_program: AccountInfo<'info>,
 }
