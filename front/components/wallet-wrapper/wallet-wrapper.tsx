@@ -11,7 +11,7 @@ import {
 import {WalletAdapterNetwork} from "@solana/wallet-adapter-base";
 import {WalletModalProvider} from "@solana/wallet-adapter-react-ui";
 import {ConnectionProvider, WalletProvider} from "@solana/wallet-adapter-react";
-
+import {WalletContextProvider} from "../wallet-program/wallet-program";
 
 export const WalletWrapper: React.FC = (props) => {
   // The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
@@ -38,7 +38,9 @@ export const WalletWrapper: React.FC = (props) => {
   return <ConnectionProvider endpoint={endpoint}>
     <WalletProvider wallets={wallets} autoConnect>
       <WalletModalProvider>
-        {props.children}
+        <WalletContextProvider>
+          {props.children}
+        </WalletContextProvider>
       </WalletModalProvider>
     </WalletProvider>
   </ConnectionProvider>;

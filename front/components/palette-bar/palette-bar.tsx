@@ -1,5 +1,6 @@
 import React, {useCallback} from "react";
 import {atom, useRecoilState} from "recoil";
+import {twPaletteList} from "./palette-bar.colors";
 
 type ColorTrayProps = {
   onClick(): void;
@@ -16,25 +17,6 @@ const ColorTray: React.FC<ColorTrayProps> = ({ color, selected, onClick }) => {
     rounded shadow cursor-pointer 
   `} />
 };
-
-const pallette = [
-  'bg-[#ffffff]',
-  'bg-[#e4e4e4]',
-  'bg-[#888888]',
-  'bg-[#222222]',
-  'bg-[#ffa7d1]',
-  'bg-[#E50000]',
-  'bg-[#E59500]',
-  'bg-[#A06A42]',
-  'bg-[#E5D900]',
-  'bg-[#94E044]',
-  'bg-[#02BE01]',
-  'bg-[#00D3DD]',
-  'bg-[#0083C7]',
-  'bg-[#0000EA]',
-  'bg-[#CF6EE4]',
-  'bg-[#820080]',
-];
 
 export const paletteColorState = atom({
   key: 'globalPaletteColor',
@@ -58,7 +40,7 @@ const PaletteBar: React.FC = () => {
     bg-zinc-900 select-none
     rounded-lg drop-shadow-xl ring-4 ring-black/10
   ">
-    {pallette.map(c =>
+    {twPaletteList.map(c =>
       <ColorTray
         key={c}
         color={c}

@@ -1,17 +1,18 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {useWallet} from "@solana/wallet-adapter-react";
 import {WalletMultiButton} from "@solana/wallet-adapter-react-ui";
 import {ChevronDownIcon} from "@heroicons/react/solid";
-import {useInkWallet} from "./use-ink-wallet";
+
+import {WalletContext} from "../wallet-program/wallet-program";
 
 const INK_AMOUNT_ML = 32;
 
 const InkWalletPanel: React.FC = () => {
   const wallet = useWallet();
-  const inkWallet = useInkWallet();
+  const {ink} = useContext(WalletContext);
 
   const [collapsed, setCollapsed] = useState(false);
-  const onClick = useCallback(async () => inkWallet.buy(INK_AMOUNT_ML), [inkWallet])
+  const onClick = useCallback(async () => ink?.buy(INK_AMOUNT_ML), [ink?.buy])
   const toggleCollapsed = useCallback(() => setCollapsed(!collapsed), [collapsed]);
 
   const isSmallScreen = typeof window === 'object' && window.innerWidth < 640;
@@ -22,11 +23,11 @@ const InkWalletPanel: React.FC = () => {
   }, [isSmallScreen]);
 
   const title =
-    inkWallet.inkBalance < 0 ?
+    ink == null || ink.balance < 0 ?
       <>Buy ink, support&nbsp;Ukraine!</> :
       (collapsed && isSmallScreen) ?
-      <>{inkWallet.inkBalance} mL</> :
-      <>{inkWallet.inkBalance} mL of ink</>;
+      <>{ink.balance} mL</> :
+      <>{ink.balance} mL of ink</>;
 
   const collapsedContent = <>
     <div className="flex flex-row w-fit" onClick={toggleCollapsed}>
@@ -68,7 +69,7 @@ const InkWalletPanel: React.FC = () => {
     {!wallet.connected && <WalletMultiButton className={ctaButtonStyle} />}
   </>;
 
-  const collapsedStyle = "w-fit left-auto right-4 py-2";
+  const collapsedStyle = "w-fit left-auto mr-6 right-4 py-2";
 
   return <div className={`
     ink-panel

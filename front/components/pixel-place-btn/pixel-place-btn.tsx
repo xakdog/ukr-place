@@ -2,7 +2,7 @@ import React from 'react';
 import {Vector} from "vecti";
 import {useRecoilCallback, useRecoilValue, useSetRecoilState} from "recoil";
 
-import {pixelChangesActions, pixelChangesState} from "../../state/pixel-changes.atom";
+import {pixelChangesActions, pixelChangesState, PixelSyncStatus} from "../../state/pixel-changes.atom";
 import {paletteColorState} from "../palette-bar/palette-bar";
 import {canvasPosState} from "../../state/canvas-pos.atom";
 
@@ -20,6 +20,7 @@ const PixelPlaceBtn: React.FC = () => {
     );
 
     setPendingPixels(pixelChangesActions.paintPixel(color, roundedPos, randomId));
+    setPendingPixels(pixelChangesActions.setStatus(PixelSyncStatus.COMMIT_CHANGES));
   }, [color, setPendingPixels]);
 
   if (color === 'transparent')

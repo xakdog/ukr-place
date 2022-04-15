@@ -18,6 +18,9 @@ const PlacedPixel: React.FC = () => {
   const opacity = pos.outOfBounds ? 0 : 1;
   const transform = `translate(${x}px, ${y}px)`;
 
+  if (color === 'transparent')
+    return null;
+
   return <div className={styles.pixel} style={{ opacity, transform, backgroundColor: color }} />;
 };
 

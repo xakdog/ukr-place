@@ -66,4 +66,18 @@ const cleanUpdates = (drawnIds: string[]) => (state: State): State => {
   return { ...state, updates };
 };
 
-export const pixelChangesActions = { setStatus, paintPixel, cleanUpdates, updateTile };
+const cleanSyncing = (drawnIds: string[]) => (state: State): State => {
+  if (drawnIds.length < 1)
+    return state;
+
+  const syncing = Object
+    .keys(state.syncing)
+    .filter(key => !drawnIds.includes(key))
+    .reduce((rest, key): Record<UniqueKey, PixelChange> =>
+      rest[key] = state.syncing[key] && rest, {}
+    );
+
+  return { ...state, syncing };
+}
+
+export const pixelChangesActions = { setStatus, paintPixel, cleanUpdates, cleanSyncing, updateTile };

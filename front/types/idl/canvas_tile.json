@@ -1,0 +1,135 @@
+{
+  "version": "0.1.0",
+  "name": "canvas_tile",
+  "instructions": [
+    {
+      "name": "initialize",
+      "accounts": [
+        {
+          "name": "canvas",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "ownerProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "position",
+          "type": {
+            "defined": "Point2d"
+          }
+        }
+      ]
+    },
+    {
+      "name": "drawOver",
+      "accounts": [
+        {
+          "name": "canvas",
+          "isMut": true,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "pixels",
+          "type": {
+            "array": [
+              {
+                "array": [
+                  "u8",
+                  16
+                ]
+              },
+              16
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "CanvasTile",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "position",
+            "type": {
+              "defined": "Point2d"
+            }
+          },
+          {
+            "name": "timesModified",
+            "type": "u32"
+          },
+          {
+            "name": "lastModified",
+            "type": "i64"
+          },
+          {
+            "name": "pixels",
+            "type": {
+              "array": [
+                {
+                  "array": [
+                    "u8",
+                    16
+                  ]
+                },
+                16
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "Point2d",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "x",
+            "type": "i32"
+          },
+          {
+            "name": "y",
+            "type": "i32"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidTileAddress",
+      "msg": "Provided pixel tile address is incorrect"
+    }
+  ],
+  "metadata": {
+    "address": "EJhGaMkY2tkdpZ6FqzZ5TF1CsUmtAXqt7PP2rp5wQ819"
+  }
+}
