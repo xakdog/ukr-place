@@ -55,7 +55,7 @@ const PaletteBar: React.FC = () => {
     absolute bottom-0 right-0 left-0 p-4 mb-8 z-10
     w-80 md:w-fit px-4 transform -translate-x-1/2 left-1/2
     flex flex-wrap gap-1 place-content-center
-    bg-zinc-800 select-none
+    bg-zinc-900 select-none
     rounded-lg drop-shadow-xl ring-4 ring-black/10
   ">
     {pallette.map(c =>

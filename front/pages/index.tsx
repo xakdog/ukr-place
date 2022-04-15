@@ -8,6 +8,7 @@ import PixelCoordinates from "../components/pixel-coordinates/pixel-coordinates"
 import PixelPlaceBtn from "../components/pixel-place-btn/pixel-place-btn";
 import {FakeSyncer} from "../components/live-canvas/fake-syncer";
 import {useLiveCanvasSync} from "../components/live-canvas/use-live-canvas-sync";
+import InkWalletPanel from "../components/ink-wallet-panel/ink-wallet-panel";
 
 const createSyncer = () => new FakeSyncer;
 
@@ -25,24 +26,12 @@ const Home: NextPage = () => {
       </Head>
 
       <main style={{ backgroundColor: '#121213' }}>
+        <InkWalletPanel />
         <PixelCanvas onClick={() => setIsEditing(!isEditing)} />
         {isEditing && <PaletteBar />}
         {isEditing && <PixelCoordinates />}
         {isEditing && <PixelPlaceBtn />}
       </main>
-
-      {/*<footer className={styles.footer}>*/}
-      {/*  <a*/}
-      {/*    href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"*/}
-      {/*    target="_blank"*/}
-      {/*    rel="noopener noreferrer"*/}
-      {/*  >*/}
-      {/*    Powered by{' '}*/}
-      {/*    <span className={styles.logo}>*/}
-      {/*      <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />*/}
-      {/*    </span>*/}
-      {/*  </a>*/}
-      {/*</footer>*/}
     </>
   )
 };

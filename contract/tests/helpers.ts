@@ -122,11 +122,11 @@ export class Helpers {
   }
 
   public async getCanvasData(point: Point2d) {
-    const UrkPlace = anchor.workspace.UkrPlace as Program<UkrPlace>;
+    const UkrPlace = anchor.workspace.UkrPlace as Program<UkrPlace>;
     const CanvasTile = anchor.workspace.CanvasTile as Program<CanvasTile>;
 
     const seed = `canvas-tile-${point.x}:${point.y}`;
-    const [pda,] = await PublicKey.findProgramAddress([seed], UrkPlace.programId);
+    const [pda,] = await PublicKey.findProgramAddress([seed], UkrPlace.programId);
 
     return CanvasTile.account.canvasTile.fetch(pda);
   }
