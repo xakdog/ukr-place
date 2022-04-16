@@ -62,7 +62,7 @@ const anchorBuy = async (
 
   tx.add(buyInk);
 
-  const res = await provider.sendAll([{ tx, signers }]);
+  const res = await provider.sendAndConfirm(tx, signers);
 
   console.log("Success tx:", res);
 

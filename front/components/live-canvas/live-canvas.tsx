@@ -1,42 +1,74 @@
-import {useRecoilState} from "recoil";
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
+import {
+  PixelChange,
+  TileChange,
+  UniqueKey
+} from "../../state/pixel-changes.atom";
 
-import {pixelChangesActions, pixelChangesState} from "../../state/pixel-changes.atom";
+export const IMAGE_WIDTH = 1280;
+export const IMAGE_HEIGHT = 912;
 
-const LiveCanvas: React.FC = () => {
+export type AllCanvasUpdates = {
+  tiles?: Record<UniqueKey, TileChange>,
+  pixels?: Record<UniqueKey, PixelChange>,
+};
+
+type LiveCanvasProps = {
+  updates: AllCanvasUpdates;
+  onUpdateDone?(updates: AllCanvasUpdates): void;
+};
+
+const LiveCanvas: React.FC<LiveCanvasProps> = ({ updates, onUpdateDone }) => {
   const canvasRef = useRef<HTMLCanvasElement>();
-  const [changes, setChanges] = useRecoilState(pixelChangesState);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const updatedTiles = updates.tiles ? Object.values(updates.tiles) : null;
+  const updatedPixels = updates.pixels ? Object.values(updates.pixels) : null;
 
   useEffect(() => {
     const ctx = canvasRef.current?.getContext("2d");
     if (!ctx) return;
+    if (isUpdating) return;
+
+    if (updatedTiles < 1 && updatedPixels == null)
+      return;
 
     const runUpdates = async () => {
-      const randomUpdateIds = Object.keys(changes.updates)
-      const randomUpdates = Object.values(changes.updates);
+      setIsUpdating(true);
 
-      const updatesPromises = randomUpdates.map(async upd => {
-        const image = await deserialize(upd.data);
-        ctx.drawImage(image, upd.pos.x, upd.pos.y);
-      });
-      await Promise.all(updatesPromises);
+      if (updatedTiles && updatedTiles.length > 0) {
+        const updatesPromises = updatedTiles.map(async upd => {
+          const image = await deserialize(upd.data);
+          ctx.drawImage(image, upd.pos.x, upd.pos.y);
+        });
 
-      if (randomUpdateIds.length > 0) {
-        setChanges(pixelChangesActions.cleanUpdates(randomUpdateIds));
+        await Promise.all(updatesPromises);
+        onUpdateDone?.(updates);
       }
 
-      const previewChanges = Object.values(changes.syncing);
-      previewChanges.forEach(change => {
-        ctx.fillStyle = change.color;
-        ctx.fillRect(change.pos.x, change.pos.y, 1, 1);
-      });
+      if (updatedPixels != null) {
+        ctx.clearRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+        updatedPixels.forEach(change => {
+          ctx.fillStyle = change.color;
+          ctx.fillRect(change.pos.x, change.pos.y, 1, 1);
+        });
+        onUpdateDone?.(updates);
+      }
+
+      setIsUpdating(false);
     };
 
     runUpdates()
       .catch(console.error);
-  }, [canvasRef.current, changes.updates, changes.syncing]);
+  }, [isUpdating, canvasRef.current, updatedTiles, updatedPixels]);
 
-  return <canvas style={{ imageRendering: 'pixelated' }} ref={canvasRef} height="912" width="1280" />;
+  return <canvas
+    className="absolute top-0 left-0"
+    height={IMAGE_HEIGHT}
+    width={IMAGE_WIDTH}
+    ref={canvasRef}
+    style={{ imageRendering: 'pixelated' }}
+  />;
 };
 
 function deserialize(data: Blob): Promise<HTMLImageElement> {

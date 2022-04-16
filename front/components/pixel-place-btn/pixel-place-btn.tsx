@@ -1,46 +1,64 @@
-import React from 'react';
-import {Vector} from "vecti";
-import {useRecoilCallback, useRecoilValue, useSetRecoilState} from "recoil";
+import React, {useCallback} from 'react';
+import {useRecoilCallback, useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
+import {PaperAirplaneIcon, PlusIcon, TrashIcon} from "@heroicons/react/outline";
 
 import {pixelChangesActions, pixelChangesState, PixelSyncStatus} from "../../state/pixel-changes.atom";
 import {paletteColorState} from "../palette-bar/palette-bar";
 import {canvasPosState} from "../../state/canvas-pos.atom";
+import {useWallet} from "@solana/wallet-adapter-react";
 
 const PixelPlaceBtn: React.FC = () => {
+  const wallet = useWallet();
   const color = useRecoilValue(paletteColorState);
-  const setPendingPixels = useSetRecoilState(pixelChangesState);
+  const [pixelState, setPixelState] = useRecoilState(pixelChangesState);
+
+  const isTrashEnabled = Object.keys(pixelState.syncing).length > 0;
+  const isSendEnabled = Object.keys(pixelState.syncing).length > 0;
+  const isAddAvailable = Object.keys(pixelState.syncing).length < 8;
+
+  const paintPixel = useCallback(() => {
+    setPixelState(pixelChangesActions.setStatus(PixelSyncStatus.COMMIT_CHANGES));
+  }, []);
+
+  const cleanPixels = useCallback(() => {
+    setPixelState(pixelChangesActions.cleanSyncing('all'));
+  }, []);
 
   const savePixel = useRecoilCallback(({snapshot}) => async () => {
     const pos = await snapshot.getPromise(canvasPosState);
     const randomId = (Math.random() + 1).toString(36).substring(7);
 
-    const roundedPos = new Vector(
-      Math.floor(pos.vector.x),
-      Math.floor(pos.vector.y),
-    );
+    setPixelState(pixelChangesActions.paintPixel(color, pos.vector, randomId));
+  }, [color, setPixelState]);
 
-    setPendingPixels(pixelChangesActions.paintPixel(color, roundedPos, randomId));
-    setPendingPixels(pixelChangesActions.setStatus(PixelSyncStatus.COMMIT_CHANGES));
-  }, [color, setPendingPixels]);
+  if (!wallet.connected)
+    return null;
 
   if (color === 'transparent')
     return null;
 
-  return <div className="
-    absolute top-16 left-0 right-0
-    flex justify-center
-  ">
-    <button onClick={savePixel} className="
-        inline-flex justify-center px-4 py-2
-        text-sm font-medium text-white
-        bg-indigo-600 rounded-md bg-opacity-80 hover:bg-opacity-90
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75
-
-        ring-white ring-2 ring-opacity-10 backdrop-blur
-    ">
-      Save the pixel
+  return <>
+    <button onClick={savePixel} disabled={!isAddAvailable} className={buttonStyle} title="Paint draft">
+      <PlusIcon className="h-5 w-5" />
     </button>
-  </div>;
+
+    <button onClick={paintPixel} disabled={!isSendEnabled} className={buttonStyle} title="Publish pixels">
+      <PaperAirplaneIcon className="h-5 w-5" />
+    </button>
+
+    <button onClick={cleanPixels} disabled={!isTrashEnabled} className={buttonStyle} title="Erase pixels">
+      <TrashIcon className="h-5 w-5" />
+    </button>
+  </>;
 };
+
+const buttonStyle = `
+  inline-flex justify-center items-center px-3
+  text-sm font-medium text-zinc-100 disabled:text-opacity-40
+  rounded-md bg-zinc-900 bg-opacity-80 hover:bg-opacity-90 disabled:hover:bg-opacity-80
+  focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75
+
+  ring-white ring-2 ring-opacity-10 backdrop-blur
+`;
 
 export default PixelPlaceBtn;

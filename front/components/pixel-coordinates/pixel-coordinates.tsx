@@ -2,18 +2,25 @@ import React from 'react';
 import {useRecoilValue} from "recoil";
 
 import {canvasPosState} from "../../state/canvas-pos.atom";
+import {pixelChangesState} from "../../state/pixel-changes.atom";
+
+const MAX_PIXELS = 8;
 
 const PixelCoordinates: React.FC = () => {
   const pos = useRecoilValue(canvasPosState);
-  const x = Math.floor(pos.vector.x);
-  const y = Math.floor(pos.vector.y);
+  const {syncing} = useRecoilValue(pixelChangesState);
+  const paintedPixels = Object.keys(syncing).length;
 
   return <div className="
-    absolute top-6 right-0 left-0 m-auto w-fit
-    bg-zinc-800 py-1 px-2 rounded
+    self-center
+    bg-zinc-800 py-1 px-2 rounded-md
     text-white font-semibold text-bold tabular-nums
   ">
-    ({x}, {y})
+    ({pos.vector.x}, {pos.vector.y})
+    {' '}
+    <span className="font-medium text-zinc-200">
+      {paintedPixels}&thinsp;/&thinsp;{MAX_PIXELS}
+    </span>
   </div>;
 };
 

@@ -14,6 +14,7 @@ const IMAGE_WIDTH = 1280;
 const IMAGE_HEIGHT = 912;
 
 const scaleBounds = (val: number) => Math.min(80, Math.max(val, 0.2));
+const isSameVectors = (a: Vector, b: Vector) => a.subtract(b).length() === 0;
 const useGesture = createUseGesture([dragAction, pinchAction, wheelAction]);
 
 export const useCanvasNav = ({ container, onClick }: canvasNavArgs) => {
@@ -30,6 +31,20 @@ export const useCanvasNav = ({ container, onClick }: canvasNavArgs) => {
   }), []);
 
   const setGlobalPos = useSetRecoilState(canvasPosState);
+  const updateGlobalPos = useCallback((pos: Vector) => {
+    const intPos = new Vector(
+      Math.floor(pos.x),
+      Math.floor(pos.y),
+    );
+
+    setGlobalPos(state => isSameVectors(state.vector, intPos) ? state : {
+      vector: intPos,
+      outOfBounds:
+        intPos.x < 0 || intPos.x > IMAGE_WIDTH ||
+        intPos.y < 0 || intPos.y > IMAGE_HEIGHT,
+    });
+  }, [setGlobalPos]);
+
   const updateValues = useCallback(() => {
     const target = container.current;
 
@@ -42,12 +57,7 @@ export const useCanvasNav = ({ container, onClick }: canvasNavArgs) => {
     target.style.transformOrigin = '0 0';
     target.style.transform = `translate(${real.x}px, ${real.y}px) scale(${state.scale})`;
 
-    setGlobalPos({
-      vector: state.canvas,
-      outOfBounds:
-        state.canvas.x < 0 || state.canvas.x > IMAGE_WIDTH ||
-        state.canvas.y < 0 || state.canvas.y > IMAGE_HEIGHT,
-    });
+    updateGlobalPos(state.canvas);
   }, [container, setGlobalPos, state]);
 
   useEffect(() => {

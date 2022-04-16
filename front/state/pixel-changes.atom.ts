@@ -66,9 +66,13 @@ const cleanUpdates = (drawnIds: string[]) => (state: State): State => {
   return { ...state, updates };
 };
 
-const cleanSyncing = (drawnIds: string[]) => (state: State): State => {
+const cleanSyncing = (drawnIds: string[] | 'all') => (state: State): State => {
   if (drawnIds.length < 1)
     return state;
+
+  if (drawnIds === 'all') {
+    return { ...state, syncing: {} };
+  }
 
   const syncing = Object
     .keys(state.syncing)

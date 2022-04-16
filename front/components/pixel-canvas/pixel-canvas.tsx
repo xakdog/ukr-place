@@ -1,22 +1,21 @@
-import React, {useRef} from "react";
-import {useRecoilValue} from "recoil";
+import React, {useCallback, useMemo, useRef} from "react";
+import {useRecoilState, useRecoilValue} from "recoil";
 
 import {useHeightCssVar} from "./useHeightCssVar";
 import {useCanvasNav} from "./useCanvasNav";
-import styles from './paint-canvas.module.css';
+import styles from './pixel-canvas.module.css';
 
-import LiveCanvas from "../live-canvas/live-canvas";
+import LiveCanvas, {AllCanvasUpdates} from "../live-canvas/live-canvas";
 import {paletteColorState} from "../palette-bar/palette-bar";
 import {canvasPosState} from "../../state/canvas-pos.atom";
+import {pixelChangesActions, pixelChangesState, TileChange, UniqueKey} from "../../state/pixel-changes.atom";
 
 const PlacedPixel: React.FC = () => {
   const color = useRecoilValue(paletteColorState);
   const pos = useRecoilValue(canvasPosState);
-  const x = Math.floor(pos.vector.x);
-  const y = Math.floor(pos.vector.y);
 
   const opacity = pos.outOfBounds ? 0 : 1;
-  const transform = `translate(${x}px, ${y}px)`;
+  const transform = `translate(${pos.vector.x}px, ${pos.vector.y}px)`;
 
   if (color === 'transparent')
     return null;
@@ -30,12 +29,24 @@ const PixelCanvas: React.FC<{ onClick(): void; }> = ({ onClick }) => {
   useHeightCssVar();
   useCanvasNav({ container: imgRef, onClick });
 
+  const [changes, setChanges] = useRecoilState(pixelChangesState);
+
+  const userPixelUpdates = useMemo(() => ({ pixels: changes.syncing }), [changes.syncing]);
+  const baseCanvasUpdates = useMemo(() => ({ tiles: changes.updates }), [changes.updates]);
+
+  const afterBaseUpdate = useCallback((updates: AllCanvasUpdates) => {
+    const updatedTileIds = Object.keys(updates.tiles);
+    setChanges(pixelChangesActions.cleanUpdates(updatedTileIds));
+  }, []);
+
   return (
     <div className={styles.container}>
       <div className={styles.content} ref={imgRef}>
         <PlacedPixel />
         <img className={styles.mapOverlay} src="/ukraine-outline.svg" />
-        <LiveCanvas />
+
+        <LiveCanvas updates={baseCanvasUpdates} onUpdateDone={afterBaseUpdate} />
+        <LiveCanvas updates={userPixelUpdates} />
       </div>
     </div>
   )

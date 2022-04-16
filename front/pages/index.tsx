@@ -29,8 +29,15 @@ const Home: NextPage = () => {
         <InkWalletPanel />
         <PixelCanvas onClick={() => setIsEditing(!isEditing)} />
         {isEditing && <PaletteBar />}
-        {isEditing && <PixelCoordinates />}
-        {isEditing && <PixelPlaceBtn />}
+        {isEditing &&
+          <div className="
+            absolute bottom-28 right-0 left-0 m-auto w-fit
+            flex flex-row gap-2
+          ">
+            <PixelCoordinates />
+            <PixelPlaceBtn />
+          </div>
+        }
       </main>
     </>
   )
