@@ -20,14 +20,14 @@ export const twPalette: [string, number][] = [
 export const twPaletteList = twPalette.map(pair => pair[0]);
 
 export const hexPaletteMap = twPalette
-  .reduce((res, [tw, idx]): Record<string, number> => {
+  .reduce((res: Record<string, number>, [tw, idx]) => {
     res[tw.slice(4, -1)] = idx;
 
     return res;
   }, {});
 
 export const hexPaletteMapReverse = twPalette
-  .reduce((res, [tw, idx]): Record<number, string> => {
+  .reduce((res: Record<number, string>, [tw, idx]) => {
     res[idx] = tw.slice(4, -1);
 
     return res;

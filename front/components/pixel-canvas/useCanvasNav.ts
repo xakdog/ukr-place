@@ -7,7 +7,7 @@ import {canvasPosState} from "../../state/canvas-pos.atom";
 
 type canvasNavArgs = {
   onClick(): void;
-  container: MutableRefObject<HTMLElement | undefined>;
+  container: MutableRefObject<HTMLDivElement | null>;
 }
 
 const IMAGE_WIDTH = 1280;
@@ -17,16 +17,17 @@ const scaleBounds = (val: number) => Math.min(80, Math.max(val, 0.2));
 const isSameVectors = (a: Vector, b: Vector) => a.subtract(b).length() === 0;
 const useGesture = createUseGesture([dragAction, pinchAction, wheelAction]);
 
-export const useCanvasNav = ({ container, onClick }: canvasNavArgs) => {
-  if (typeof window === 'undefined') {
-    return;
-  }
+const documentBody = typeof document !== 'undefined' ? document.body : undefined;
+const screenCenter = typeof window === 'undefined' ?
+  new Vector(0, 0) :
+  new Vector(window.innerWidth / 2, window.innerHeight / 2);
 
+export const useCanvasNav = ({ container, onClick }: canvasNavArgs) => {
   const state = useMemo(() => ({
     scale: 0.5,
     canvas: new Vector(IMAGE_WIDTH / 2, IMAGE_HEIGHT / 2),
-    offset: new Vector(window.innerWidth / 2, window.innerHeight / 2),
-    mouse: new Vector(window.innerWidth / 2, window.innerHeight / 2),
+    offset: screenCenter,
+    mouse: screenCenter,
     startOffset: new Vector(0, 0),
   }), []);
 
@@ -58,7 +59,7 @@ export const useCanvasNav = ({ container, onClick }: canvasNavArgs) => {
     target.style.transform = `translate(${real.x}px, ${real.y}px) scale(${state.scale})`;
 
     updateGlobalPos(state.canvas);
-  }, [container, setGlobalPos, state]);
+  }, [container, setGlobalPos, state, updateGlobalPos]);
 
   useEffect(() => {
     const target = container.current;
@@ -69,7 +70,7 @@ export const useCanvasNav = ({ container, onClick }: canvasNavArgs) => {
     target.style.height = IMAGE_HEIGHT + 'px';
 
     updateValues();
-  }, [container.current])
+  }, [container, updateValues])
 
   useGesture({
     onDrag: ({ delta: [dx, dy] }) => {
@@ -102,7 +103,7 @@ export const useCanvasNav = ({ container, onClick }: canvasNavArgs) => {
       updateValues();
     },
   }, {
-    target: document.body,
+    target: documentBody,
   });
 
   useEffect(() => {
@@ -121,16 +122,16 @@ export const useCanvasNav = ({ container, onClick }: canvasNavArgs) => {
       state.mouse = new Vector(ev.offsetX, ev.offsetY);
     };
 
-    const preventDefault = e => e.preventDefault();
+    const preventDefault = (e: Event) => e.preventDefault();
 
-    window.addEventListener('resize', onWindowResize);
-    window.addEventListener('mousemove', onMouseMove);
+    window?.addEventListener('resize', onWindowResize);
+    window?.addEventListener('mousemove', onMouseMove);
     document.addEventListener('gesturestart', preventDefault);
     document.addEventListener('gesturechange', preventDefault);
 
     return () => {
-      window.removeEventListener('resize', onWindowResize);
-      window.removeEventListener('mousemove', onMouseMove);
+      window?.removeEventListener('resize', onWindowResize);
+      window?.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('gesturestart', preventDefault);
       document.removeEventListener('gesturechange', preventDefault);
     }

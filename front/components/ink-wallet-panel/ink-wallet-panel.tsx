@@ -10,9 +10,10 @@ const INK_AMOUNT_ML = 32;
 const InkWalletPanel: React.FC = () => {
   const wallet = useWallet();
   const {ink} = useContext(WalletContext);
+  const buyInk = ink?.buy;
 
   const [collapsed, setCollapsed] = useState(false);
-  const onClick = useCallback(async () => ink?.buy(INK_AMOUNT_ML), [ink?.buy])
+  const onClick = useCallback(async () => buyInk?.(INK_AMOUNT_ML), [buyInk])
   const toggleCollapsed = useCallback(() => setCollapsed(!collapsed), [collapsed]);
 
   const isSmallScreen = typeof window === 'object' && window.innerWidth < 640;

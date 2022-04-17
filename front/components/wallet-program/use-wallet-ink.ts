@@ -12,11 +12,15 @@ export enum InkWalletStatus {
   READY='ready',
 }
 
-const anchorFetchBalance = async (program: Program<UkrPlace>, wallet: PublicKey): Promise<number | null> => {
+const anchorFetchBalance = async (
+  // @ts-ignore
+  program: Program<typeof UkrPlace>,
+  wallet: PublicKey
+): Promise<number | null> => {
   try {
     const pixWalletData = await program.account.pixelWallet.fetch(wallet);
     return pixWalletData.availablePixels.toNumber();
-  } catch (e: Error) {
+  } catch (e: any) {
     if (e.message.startsWith('Account does not exist')) {
       return null;
     } else { throw e; }
@@ -106,7 +110,7 @@ export const useWalletInk = (ctx: WalletProgram | undefined) => {
 
     anchorBuy(charityAccount, milliliters, inkWalletStatus, ctx)
       .then(sig => {
-        const isUpdated = sig?.length > 0;
+        const isUpdated = sig != null && sig.length > 0;
 
         if (isUpdated) {
           fetchBalance();

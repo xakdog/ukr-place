@@ -21,7 +21,7 @@ const groupTileChanges = (syncing: Record<UniqueKey, PixelChange>): TileChangeRe
 
       return { tilePos, tilePosStr, ...change };
     })
-    .reduce((grouped, change): Record<string, typeof change[]> => {
+    .reduce((grouped: Record<string, typeof change[]>, change) => {
       grouped[change.tilePosStr] = grouped[change.tilePosStr] || [];
       grouped[change.tilePosStr].push(change);
 
@@ -48,6 +48,9 @@ const groupTileChanges = (syncing: Record<UniqueKey, PixelChange>): TileChangeRe
 const colorsArrayToImage = (colorsArray: number[][], tilePos: Vector) => {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
+
+  if (!ctx)
+    throw new Error('No canvas context');
 
   canvas.height = TILE_SIZE;
   canvas.width = TILE_SIZE;

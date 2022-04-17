@@ -19,7 +19,7 @@ type LiveCanvasProps = {
 };
 
 const LiveCanvas: React.FC<LiveCanvasProps> = ({ updates, onUpdateDone }) => {
-  const canvasRef = useRef<HTMLCanvasElement>();
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
   const updatedTiles = updates.tiles ? Object.values(updates.tiles) : null;
@@ -30,7 +30,7 @@ const LiveCanvas: React.FC<LiveCanvasProps> = ({ updates, onUpdateDone }) => {
     if (!ctx) return;
     if (isUpdating) return;
 
-    if (updatedTiles < 1 && updatedPixels == null)
+    if (!updatedTiles?.length && updatedPixels == null)
       return;
 
     const runUpdates = async () => {

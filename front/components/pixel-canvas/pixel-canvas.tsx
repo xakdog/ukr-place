@@ -1,5 +1,6 @@
 import React, {useCallback, useMemo, useRef} from "react";
 import {useRecoilState, useRecoilValue} from "recoil";
+import Image from 'next/image';
 
 import {useHeightCssVar} from "./useHeightCssVar";
 import {useCanvasNav} from "./useCanvasNav";
@@ -24,7 +25,7 @@ const PlacedPixel: React.FC = () => {
 };
 
 const PixelCanvas: React.FC<{ onClick(): void; }> = ({ onClick }) => {
-  const imgRef = useRef<HTMLElement>();
+  const imgRef = useRef<HTMLDivElement | null>(null);
 
   useHeightCssVar();
   useCanvasNav({ container: imgRef, onClick });
@@ -35,15 +36,17 @@ const PixelCanvas: React.FC<{ onClick(): void; }> = ({ onClick }) => {
   const baseCanvasUpdates = useMemo(() => ({ tiles: changes.updates }), [changes.updates]);
 
   const afterBaseUpdate = useCallback((updates: AllCanvasUpdates) => {
-    const updatedTileIds = Object.keys(updates.tiles);
-    setChanges(pixelChangesActions.cleanUpdates(updatedTileIds));
-  }, []);
+    if (updates.tiles) {
+      const updatedTileIds = Object.keys(updates.tiles);
+      setChanges(pixelChangesActions.cleanUpdates(updatedTileIds));
+    }
+  }, [setChanges]);
 
   return (
     <div className={styles.container}>
       <div className={styles.content} ref={imgRef}>
         <PlacedPixel />
-        <img className={styles.mapOverlay} src="/ukraine-outline.svg" />
+        <Image className={styles.mapOverlay} src="/ukraine-outline.svg" />
 
         <LiveCanvas updates={baseCanvasUpdates} onUpdateDone={afterBaseUpdate} />
         <LiveCanvas updates={userPixelUpdates} />

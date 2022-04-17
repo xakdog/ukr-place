@@ -16,6 +16,9 @@ function serializeImageUri(url: string): Promise<TileChange | null> {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
 
+  if (!ctx)
+    throw new Error('No canvas context');
+
   const baseImage = new Image();
 
   return new Promise(resolve => {

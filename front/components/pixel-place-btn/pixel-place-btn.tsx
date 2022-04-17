@@ -19,11 +19,11 @@ const PixelPlaceBtn: React.FC = () => {
 
   const paintPixel = useCallback(() => {
     setPixelState(pixelChangesActions.setStatus(PixelSyncStatus.COMMIT_CHANGES));
-  }, []);
+  }, [setPixelState]);
 
   const cleanPixels = useCallback(() => {
     setPixelState(pixelChangesActions.cleanSyncing('all'));
-  }, []);
+  }, [setPixelState]);
 
   const savePixel = useRecoilCallback(({snapshot}) => async () => {
     const pos = await snapshot.getPromise(canvasPosState);

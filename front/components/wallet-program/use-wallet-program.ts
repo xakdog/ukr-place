@@ -12,8 +12,10 @@ export type WalletProgram = {
   inkWallet: Keypair,
   anchorWallet: AnchorWallet,
   // TODO: use program directly
-  ukrPlace: { id: PublicKey, program: Program<UkrPlace> },
-  canvasTile: { id: PublicKey, program: Program<CanvasTile> },
+  // @ts-ignore
+  ukrPlace: { id: PublicKey, program: Program<typeof UkrPlace> },
+  // @ts-ignore
+  canvasTile: { id: PublicKey, program: Program<typeof CanvasTile> },
 };
 
 export const useWalletProgram = (): WalletProgram | undefined => {
@@ -21,8 +23,10 @@ export const useWalletProgram = (): WalletProgram | undefined => {
   const { connection } = useConnection();
 
   const [provider, setProvider] = useState<AnchorProvider>();
-  const [ukrPlaceProgram, setUkrPlaceProgram] = useState<Program<UkrPlace>>();
-  const [canvasTileProgram, setCanvasTileProgram] = useState<Program<CanvasTile>>();
+  // @ts-ignore
+  const [ukrPlaceProgram, setUkrPlaceProgram] = useState<Program<typeof UkrPlace>>();
+  // @ts-ignore
+  const [canvasTileProgram, setCanvasTileProgram] = useState<Program<typeof CanvasTile>>();
 
   const inkWallet = useMemo(getWalletKey, []);
   const ukrPlaceId = useMemo(() => new PublicKey(UkrPlace.metadata.address), []);
@@ -47,11 +51,15 @@ export const useWalletProgram = (): WalletProgram | undefined => {
     if (!anchorWallet) return;
 
     const provider = new AnchorProvider(connection, anchorWallet, AnchorProvider.defaultOptions());
+    // @ts-ignore
     const ukrPlace = new Program(UkrPlace, UkrPlace.metadata.address, provider);
+    // @ts-ignore
     const canvasTile = new Program(CanvasTile, UkrPlace.metadata.address, provider);
 
     setProvider(provider);
+    // @ts-ignore
     setUkrPlaceProgram(ukrPlace);
+    // @ts-ignore
     setCanvasTileProgram(canvasTile);
   }, [anchorWallet, inkWallet]);
 

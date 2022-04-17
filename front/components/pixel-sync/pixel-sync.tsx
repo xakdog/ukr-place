@@ -36,6 +36,8 @@ export const PixelSync: React.FC<{ ctx: WalletProgram; refreshInk(): void; }> = 
   return null;
 };
 
+type TileData =  { pixels: number[][], position: { x: number; y: number; } };
+
 const anchor = {
   syncTiles: async (ctx: WalletProgram, changes: TileChangeReq[]) => {
     const changesWithPda = await Promise.all(
@@ -73,7 +75,7 @@ const anchor = {
   },
 
   findPda: async (ctx: WalletProgram, pos: Vector) => {
-    const seed = `canvas-tile-${pos.x}:${pos.y}`;
+    const seed = new TextEncoder().encode(`canvas-tile-${pos.x}:${pos.y}`);
     const [pda, bump] = await PublicKey.findProgramAddress([seed], ctx.ukrPlace.id);
 
     return pda;
@@ -84,8 +86,8 @@ const anchor = {
 
     return pdas
       .map((pda, idx) => ({ pda, tile: res[idx] }))
-      .reduce((acc, { pda, tile }): Record<string, { pixels: number[][], position: { x: number; y: number; } }> => {
-        acc[pda.toBase58()] = tile;
+      .reduce((acc: Record<string, TileData | null>, { pda, tile }) => {
+        acc[pda.toBase58()] = tile as TileData | null;
 
         return acc;
       }, {});

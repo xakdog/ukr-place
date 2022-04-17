@@ -59,9 +59,10 @@ const cleanUpdates = (drawnIds: string[]) => (state: State): State => {
   const updates = Object
     .keys(state.updates)
     .filter(key => !drawnIds.includes(key))
-    .reduce((rest, key): Record<UniqueKey, TileChange> =>
-      rest[key] = state.updates[key] && rest, {}
-    );
+    .reduce((rest: Record<UniqueKey, TileChange>, key) => {
+      rest[key] = state.updates[key];
+      return rest;
+    }, {});
 
   return { ...state, updates };
 };
@@ -77,9 +78,10 @@ const cleanSyncing = (drawnIds: string[] | 'all') => (state: State): State => {
   const syncing = Object
     .keys(state.syncing)
     .filter(key => !drawnIds.includes(key))
-    .reduce((rest, key): Record<UniqueKey, PixelChange> =>
-      rest[key] = state.syncing[key] && rest, {}
-    );
+    .reduce((rest: Record<UniqueKey, PixelChange>, key) => {
+      rest[key] = state.syncing[key];
+      return rest;
+    }, {});
 
   return { ...state, syncing };
 }

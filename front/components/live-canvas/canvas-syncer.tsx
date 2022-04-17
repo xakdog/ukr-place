@@ -7,6 +7,7 @@ import {AnchorWallet, useConnection} from "@solana/wallet-adapter-react";
 
 import {pixelChangesActions, pixelChangesState, TileChange} from "../../state/pixel-changes.atom";
 import {pixelChangesTransform} from "../../state/pixel-changes.transform";
+
 import CanvasTile from "../../types/idl/canvas_tile.json";
 
 export const CanvasSyncer: React.FC = () => {
@@ -16,11 +17,12 @@ export const CanvasSyncer: React.FC = () => {
   const updateTile = useCallback((changes: TileChange) => {
     const randomId = (Math.random() + 1).toString(36).substring(7);
     updatePixels(pixelChangesActions.updateTile(changes, randomId));
-  }, []);
+  }, [updatePixels]);
 
   useEffect(() => {
     const programId = new PublicKey(CanvasTile.metadata.address);
     const provider = new AnchorProvider(connection, {} as AnchorWallet, AnchorProvider.defaultOptions());
+    // @ts-ignore
     const canvasTile = new Program(CanvasTile, CanvasTile.metadata.address, provider);
 
     connection
@@ -42,7 +44,7 @@ export const CanvasSyncer: React.FC = () => {
         .then(t => t && updateTile(t))
         .catch(console.error);
     })
-  }, [connection]);
+  }, [connection, updateTile]);
 
   return null;
 };
