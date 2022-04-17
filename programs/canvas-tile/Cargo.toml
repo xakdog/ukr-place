@@ -1,14 +1,15 @@
 [package]
-name = "ukr_place"
+name = "canvas-tile"
 version = "0.1.0"
 description = "Created with Anchor"
 edition = "2018"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "ukr_place"
+name = "canvas_tile"
 
 [features]
+init-if-needed = []
 no-entrypoint = []
 no-idl = []
 no-log-ix-name = []
@@ -17,4 +18,3 @@ default = []
 
 [dependencies]
 anchor-lang = "0.23.0"
-canvas-tile = { path = "../canvas-tile", features = ["cpi"] }
