@@ -12,6 +12,7 @@
     touch-action: none;
     pointer-events: none;
     opacity: 0;
+    @apply bg-zinc-100 rounded-lg;
 }
 
 .image {
@@ -19,10 +20,20 @@
     image-rendering: pixelated;
 }
 
+/* Doesn't work eats up too much memory LOL */
+.imageFixSafari {
+    /*transform: scale(.1) translate(-450%,-450%);*/
+    /*zoom: 10;*/
+
+    transform: scale(.2) translate(-150%,-150%);
+    zoom: 5;
+}
+
 .mapOverlay {
     position: absolute;
     pointer-events: none;
     z-index: 1;
+    opacity: 0.1;
 }
 
 .pixel {

@@ -34,8 +34,8 @@ const PaletteBar: React.FC = () => {
   }, [selected, setSelected]);
 
   return <div className="
-    absolute bottom-0 right-0 left-0 p-4 mb-8 z-10
-    w-80 md:w-fit px-4 transform -translate-x-1/2 left-1/2
+    p-4 mb-8 mt-4 z-10
+    w-80 md:w-fit px-4
     flex flex-wrap gap-1 place-content-center
     bg-zinc-900 select-none
     rounded-lg drop-shadow-xl ring-4 ring-black/10

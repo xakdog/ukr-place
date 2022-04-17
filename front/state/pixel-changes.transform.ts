@@ -2,7 +2,7 @@ import {Vector} from "vecti";
 import {PixelChange, TileChange, UniqueKey} from "./pixel-changes.atom";
 import {hexPaletteMap, hexPaletteMapReverse} from "../components/palette-bar/palette-bar.colors";
 
-export const CANVAS_SIZE = 16;
+export const TILE_SIZE = 16;
 export const DEFAULT_COLOR = '#ffffff';
 
 export type TileChangeReq = {
@@ -49,11 +49,11 @@ const colorsArrayToImage = (colorsArray: number[][], tilePos: Vector) => {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
 
-  canvas.height = CANVAS_SIZE;
-  canvas.width = CANVAS_SIZE;
+  canvas.height = TILE_SIZE;
+  canvas.width = TILE_SIZE;
 
-  const pos = tilePos.multiply(CANVAS_SIZE);
-  const size = new Vector(CANVAS_SIZE, CANVAS_SIZE);
+  const pos = tilePos.multiply(TILE_SIZE);
+  const size = new Vector(TILE_SIZE, TILE_SIZE);
 
   return new Promise<TileChange | null>(resolve => {
     const previewChanges = colorsArray.flatMap((row, y) =>

@@ -1,7 +1,7 @@
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {useWallet} from "@solana/wallet-adapter-react";
-import {WalletMultiButton} from "@solana/wallet-adapter-react-ui";
 import {ChevronDownIcon} from "@heroicons/react/solid";
+import {WalletMultiButton} from "@solana/wallet-adapter-react-ui";
 
 import {WalletContext} from "../wallet-program/wallet-program";
 

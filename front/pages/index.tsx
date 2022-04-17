@@ -2,18 +2,12 @@ import {useState} from "react";
 import type { NextPage } from 'next'
 import Head from 'next/head';
 
-import PixelCanvas from "../components/pixel-canvas/pixel-canvas";
-import PaletteBar from "../components/palette-bar/palette-bar";
-import PixelCoordinates from "../components/pixel-coordinates/pixel-coordinates";
-import PixelPlaceBtn from "../components/pixel-place-btn/pixel-place-btn";
-import {FakeSyncer} from "../components/live-canvas/fake-syncer";
-import {useLiveCanvasSync} from "../components/live-canvas/use-live-canvas-sync";
 import InkWalletPanel from "../components/ink-wallet-panel/ink-wallet-panel";
+import PixelCanvas from "../components/pixel-canvas/pixel-canvas";
+import {FooterActions} from "../components/footer-actions/footer-actions";
 
-const createSyncer = () => new FakeSyncer;
 
 const Home: NextPage = () => {
-  useLiveCanvasSync(createSyncer);
   const [isEditing, setIsEditing] = useState(true);
 
   return (
@@ -28,17 +22,11 @@ const Home: NextPage = () => {
       <main style={{ backgroundColor: '#121213' }}>
         <InkWalletPanel />
         <PixelCanvas onClick={() => setIsEditing(!isEditing)} />
-        {isEditing && <PaletteBar />}
-        {isEditing &&
-          <div className="
-            absolute bottom-28 right-0 left-0 m-auto w-fit
-            flex flex-row gap-2
-          ">
-            <PixelCoordinates />
-            <PixelPlaceBtn />
-          </div>
-        }
       </main>
+
+      <footer>
+        {isEditing && <FooterActions />}
+      </footer>
     </>
   )
 };

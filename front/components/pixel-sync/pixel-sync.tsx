@@ -15,34 +15,21 @@ export const PixelSync: React.FC<{ ctx: WalletProgram; refreshInk(): void; }> = 
     if (Object.keys(state.syncing).length === 0) return;
     if (state.syncStatus !== PixelSyncStatus.COMMIT_CHANGES) return;
 
-    const runShit = async () => {
+    const runSync = async () => {
       const keysToUpdate = Object.keys(state.syncing);
       const changeReqs = pixelChangesTransform.groupTileChanges(state.syncing);
 
-      const res = await anchor.syncTiles(ctx, changeReqs);
-      await ctx.provider.connection.confirmTransaction(res);
+      setState(pixelChangesActions.setStatus(PixelSyncStatus.AWAITING_CONFIRMATION));
+      await anchor.syncTiles(ctx, changeReqs);
+      setState(pixelChangesActions.setStatus(PixelSyncStatus.CHANGES_CONFIRMED));
 
       refreshInk();
       setState(pixelChangesActions.cleanSyncing(keysToUpdate));
-
-      const pdas = await Promise.all(changeReqs.map(change => anchor.findPda(ctx, change.tilePos)));
-      const duck = await anchor.getTiles(ctx, pdas);
-
-      const repaints = await Promise.all(Object
-        .values(duck)
-        .map((c) => pixelChangesTransform.colorsArrayToImage(c.pixels, new Vector(c.position.x, c.position.y)))
-      );
-
-      for (let repaint of repaints) {
-        if (repaint) {
-          const randomId = (Math.random() + 1).toString(36).substring(7);
-          setState(pixelChangesActions.updateTile(repaint, randomId));
-        }
-      }
     };
 
-    runShit()
-      .catch(console.error);
+    runSync()
+      .catch(console.error)
+      .finally(() => setState(pixelChangesActions.setStatus(PixelSyncStatus.ACCEPTING_CHANGES)));
   }, [state, ctx.inkWallet, state.syncStatus, refreshInk]);
 
 
@@ -78,7 +65,7 @@ const anchor = {
 
     signers.push(ctx.inkWallet);
 
-    const res = await ctx.provider.sendAll([{ tx, signers }]);
+    const res = await ctx.provider.sendAndConfirm(tx, signers);
 
     console.log("Success tx:", res);
 

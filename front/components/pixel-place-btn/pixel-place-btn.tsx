@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react';
-import {useRecoilCallback, useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
+import {useRecoilCallback, useRecoilState, useRecoilValue} from "recoil";
 import {PaperAirplaneIcon, PlusIcon, TrashIcon} from "@heroicons/react/outline";
 
 import {pixelChangesActions, pixelChangesState, PixelSyncStatus} from "../../state/pixel-changes.atom";
@@ -12,9 +12,10 @@ const PixelPlaceBtn: React.FC = () => {
   const color = useRecoilValue(paletteColorState);
   const [pixelState, setPixelState] = useRecoilState(pixelChangesState);
 
-  const isTrashEnabled = Object.keys(pixelState.syncing).length > 0;
-  const isSendEnabled = Object.keys(pixelState.syncing).length > 0;
-  const isAddAvailable = Object.keys(pixelState.syncing).length < 8;
+  const isPending = pixelState.syncStatus === PixelSyncStatus.AWAITING_CONFIRMATION;
+  const isTrashEnabled = !isPending && Object.keys(pixelState.syncing).length > 0;
+  const isSendEnabled = !isPending && Object.keys(pixelState.syncing).length > 0;
+  const isAddAvailable = !isPending && Object.keys(pixelState.syncing).length < 8;
 
   const paintPixel = useCallback(() => {
     setPixelState(pixelChangesActions.setStatus(PixelSyncStatus.COMMIT_CHANGES));

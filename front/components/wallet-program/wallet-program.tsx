@@ -2,6 +2,7 @@ import React from "react";
 import {useWalletProgram, WalletProgram} from "./use-wallet-program";
 import {useWalletInk} from "./use-wallet-ink";
 import {PixelSync} from "../pixel-sync/pixel-sync";
+import {CanvasSyncer} from "../live-canvas/canvas-syncer";
 
 export type WalletProps = {
   ctx: WalletProgram | undefined,
@@ -16,6 +17,9 @@ export const WalletContextProvider: React.FC = props => {
 
   return <WalletContext.Provider value={{ ctx, ink }}>
     {props.children}
+
     {ctx && <PixelSync ctx={ctx} refreshInk={ink.refresh} />}
+
+    <CanvasSyncer />
   </WalletContext.Provider>;
 };
