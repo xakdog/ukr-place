@@ -1,0 +1,50 @@
+.container {
+    width: 100vw;
+    height: 100vh;
+    height: var(--app-height);
+
+    overflow: hidden;
+}
+
+.content {
+    position: relative;
+    user-select: none;
+    touch-action: none;
+    pointer-events: none;
+    opacity: 0;
+    @apply bg-zinc-100 rounded-lg;
+}
+
+.image {
+    transform: scale(1);
+    image-rendering: pixelated;
+}
+
+/* Doesn't work eats up too much memory LOL */
+.imageFixSafari {
+    /*transform: scale(.1) translate(-450%,-450%);*/
+    /*zoom: 10;*/
+
+    transform: scale(.2) translate(-150%,-150%);
+    zoom: 5;
+}
+
+.mapOverlay {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.1;
+}
+
+.pixel {
+    height: 1px;
+    width: 1px;
+    position: absolute;
+    z-index: 1;
+    box-shadow:
+        0.5px 0.5px 0 -0.4px black,
+        0.5px -0.5px 0 -0.4px black,
+        -0.5px 0.5px 0 -0.4px black,
+        -0.5px -0.5px 0 -0.4px black,
+        0 0 0 0.1px #f4f4f5;
+}
