@@ -6,7 +6,7 @@ import {useHeightCssVar} from "./useHeightCssVar";
 import {useCanvasNav} from "./useCanvasNav";
 import styles from './pixel-canvas.module.css';
 
-import LiveCanvas, {AllCanvasUpdates} from "../live-canvas/live-canvas";
+import LiveCanvas, {AllCanvasUpdates, IMAGE_HEIGHT, IMAGE_WIDTH} from "../live-canvas/live-canvas";
 import {paletteColorState} from "../palette-bar/palette-bar";
 import {canvasPosState} from "../../state/canvas-pos.atom";
 import {pixelChangesActions, pixelChangesState, TileChange, UniqueKey} from "../../state/pixel-changes.atom";
@@ -46,7 +46,7 @@ const PixelCanvas: React.FC<{ onClick(): void; }> = ({ onClick }) => {
     <div className={styles.container}>
       <div className={styles.content} ref={imgRef}>
         <PlacedPixel />
-        <Image className={styles.mapOverlay} src="/ukraine-outline.svg" />
+        <Image className={styles.mapOverlay} height={IMAGE_HEIGHT} width={IMAGE_WIDTH} src="/ukraine-outline.svg" />
 
         <LiveCanvas updates={baseCanvasUpdates} onUpdateDone={afterBaseUpdate} />
         <LiveCanvas updates={userPixelUpdates} />

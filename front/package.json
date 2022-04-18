@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^0.0.0-insiders.b4a4e0b",
     "@heroicons/react": "^1.0.6",
     "@project-serum/anchor": "^0.24.0",
     "@solana/wallet-adapter-base": "^0.9.5",

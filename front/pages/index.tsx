@@ -1,9 +1,10 @@
-import {useEffect, useMemo, useState} from "react";
+import {useState} from "react";
 import type { NextPage } from 'next'
 import Head from 'next/head';
 
 import InkWalletPanel from "../components/ink-wallet-panel/ink-wallet-panel";
 import PixelCanvas from "../components/pixel-canvas/pixel-canvas";
+import IntroPopup from "../components/intro-popup/intro-popup";
 import {FooterActions} from "../components/footer-actions/footer-actions";
 
 
@@ -20,6 +21,7 @@ const Home: NextPage = () => {
       </Head>
 
       <main style={{ backgroundColor: '#121213' }}>
+        <IntroPopup />
         <InkWalletPanel />
         <PixelCanvas onClick={() => setIsEditing(!isEditing)} />
       </main>
