@@ -1,3 +1,5 @@
+import "core-js/actual";
+
 import "../styles/globals.css";
 import "../components/wallet-wrapper/wallet-wrapper.global.css";
 
