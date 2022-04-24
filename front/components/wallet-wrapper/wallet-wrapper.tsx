@@ -38,7 +38,7 @@ export const WalletWrapper: React.FC = (props) => {
   return <ConnectionProvider endpoint={endpoint}>
     <WalletProvider wallets={wallets} autoConnect>
       <WalletModalProvider>
-        <WalletContextProvider>
+        <WalletContextProvider network={network}>
           {props.children}
         </WalletContextProvider>
       </WalletModalProvider>

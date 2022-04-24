@@ -122,7 +122,7 @@ export default function IntroPopup() {
                   <a
                     target="_blank"
                     rel="noreferrer"
-                    href="https://www.notion.so/Support-Ukraine-with-crypto-art-aca0eb6852ff453091e5d3e52b863eed"
+                    href="https://viridian-tadpole-db1.notion.site/Support-Ukraine-with-crypto-art-aca0eb6852ff453091e5d3e52b863eed"
                     className="
                       inline-flex justify-center px-4 py-2
                       text-sm font-medium text-white bg-indigo-700 border

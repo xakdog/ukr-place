@@ -4,12 +4,13 @@ import {ChevronDownIcon} from "@heroicons/react/solid";
 import {WalletMultiButton} from "@solana/wallet-adapter-react-ui";
 
 import {WalletContext} from "../wallet-program/wallet-program";
+import UkrPlace from "../../types/idl/ukr_place.json";
 
 const INK_AMOUNT_ML = 32;
 
 const InkWalletPanel: React.FC = () => {
   const wallet = useWallet();
-  const {ink} = useContext(WalletContext);
+  const {ink, network} = useContext(WalletContext);
   const buyInk = ink?.buy;
 
   const [collapsed, setCollapsed] = useState(false);
@@ -60,7 +61,8 @@ const InkWalletPanel: React.FC = () => {
       text-sm	text-zinc-100
     ">
       All money are donated directly to organisations that support Ukrainian
-      people. <a href="#" className="underline">Track our transactions.</a>
+      people. <a href={`https://explorer.solana.com/address/${UkrPlace.metadata.address}?cluster=${network}`}
+                 target="_blank" rel="noreferrer" className="underline">Track our transactions.</a>
     </p>
 
     {wallet.connected && <button onClick={onClick} className={ctaButtonStyle}>
