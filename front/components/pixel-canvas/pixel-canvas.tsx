@@ -1,15 +1,22 @@
-import React, {useCallback, useMemo, useRef} from "react";
-import {useRecoilState, useRecoilValue} from "recoil";
-import Image from 'next/image';
+import React, { useCallback, useMemo, useRef } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
+import Image from "next/image";
 
-import {useHeightCssVar} from "./useHeightCssVar";
-import {useCanvasNav} from "./useCanvasNav";
-import styles from './pixel-canvas.module.css';
+import { useHeightCssVar } from "./useHeightCssVar";
+import { useCanvasNav } from "./useCanvasNav";
+import styles from "./pixel-canvas.module.css";
 
-import LiveCanvas, {AllCanvasUpdates, IMAGE_HEIGHT, IMAGE_WIDTH} from "../live-canvas/live-canvas";
-import {paletteColorState} from "../palette-bar/palette-bar";
-import {canvasPosState} from "../../state/canvas-pos.atom";
-import {pixelChangesActions, pixelChangesState, TileChange, UniqueKey} from "../../state/pixel-changes.atom";
+import LiveCanvas, {
+  AllCanvasUpdates,
+  IMAGE_HEIGHT,
+  IMAGE_WIDTH,
+} from "../live-canvas/live-canvas";
+import { paletteColorState } from "../palette-bar/palette-bar";
+import { canvasPosState } from "../../state/canvas-pos.atom";
+import {
+  pixelChangesActions,
+  pixelChangesState,
+} from "../../state/pixel-changes.atom";
 
 const PlacedPixel: React.FC = () => {
   const color = useRecoilValue(paletteColorState);
@@ -18,13 +25,17 @@ const PlacedPixel: React.FC = () => {
   const opacity = pos.outOfBounds ? 0 : 1;
   const transform = `translate(${pos.vector.x}px, ${pos.vector.y}px)`;
 
-  if (color === 'transparent')
-    return null;
+  if (color === "transparent") return null;
 
-  return <div className={styles.pixel} style={{ opacity, transform, backgroundColor: color }} />;
+  return (
+    <div
+      className={styles.pixel}
+      style={{ opacity, transform, backgroundColor: color }}
+    />
+  );
 };
 
-const PixelCanvas: React.FC<{ onClick(): void; }> = ({ onClick }) => {
+const PixelCanvas: React.FC<{ onClick(): void }> = ({ onClick }) => {
   const imgRef = useRef<HTMLDivElement | null>(null);
 
   useHeightCssVar();
@@ -32,27 +43,43 @@ const PixelCanvas: React.FC<{ onClick(): void; }> = ({ onClick }) => {
 
   const [changes, setChanges] = useRecoilState(pixelChangesState);
 
-  const userPixelUpdates = useMemo(() => ({ pixels: changes.syncing }), [changes.syncing]);
-  const baseCanvasUpdates = useMemo(() => ({ tiles: changes.updates }), [changes.updates]);
+  const userPixelUpdates = useMemo(
+    () => ({ pixels: changes.syncing }),
+    [changes.syncing]
+  );
+  const baseCanvasUpdates = useMemo(
+    () => ({ tiles: changes.updates }),
+    [changes.updates]
+  );
 
-  const afterBaseUpdate = useCallback((updates: AllCanvasUpdates) => {
-    if (updates.tiles) {
-      const updatedTileIds = Object.keys(updates.tiles);
-      setChanges(pixelChangesActions.cleanUpdates(updatedTileIds));
-    }
-  }, [setChanges]);
+  const afterBaseUpdate = useCallback(
+    (updates: AllCanvasUpdates) => {
+      if (updates.tiles) {
+        const updatedTileIds = Object.keys(updates.tiles);
+        setChanges(pixelChangesActions.cleanUpdates(updatedTileIds));
+      }
+    },
+    [setChanges]
+  );
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-testid="pixel-canvas">
       <div className={styles.content} ref={imgRef}>
         <PlacedPixel />
-        <Image className={styles.mapOverlay} height={IMAGE_HEIGHT} width={IMAGE_WIDTH} src="/ukraine-outline.svg" />
-
-        <LiveCanvas updates={baseCanvasUpdates} onUpdateDone={afterBaseUpdate} />
+        <Image
+          className={styles.mapOverlay}
+          height={IMAGE_HEIGHT}
+          width={IMAGE_WIDTH}
+          src="/ukraine-outline.svg"
+        />
+        <LiveCanvas
+          updates={baseCanvasUpdates}
+          onUpdateDone={afterBaseUpdate}
+        />
         <LiveCanvas updates={userPixelUpdates} />
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default PixelCanvas;
