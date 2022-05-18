@@ -103,10 +103,6 @@ export const useWalletInk = (ctx: WalletProgram | undefined) => {
 
   const userKey = ctx?.inkWallet.publicKey.toBase58();
 
-  useEffect(() => {
-    fetchBalance();
-  }, [userKey]);
-
   const fetchBalance = useCallback(() => {
     if (!ctx) return;
 
@@ -171,6 +167,10 @@ export const useWalletInk = (ctx: WalletProgram | undefined) => {
     },
     [userKey, fetchBalance, inkWalletStatus]
   );
+
+  useEffect(() => {
+    fetchBalance();
+  }, [userKey, fetchBalance]);
 
   return useMemo(
     () => ({

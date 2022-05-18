@@ -62,7 +62,7 @@ export const BuyInkSlider: React.FC<BuyInkSliderProps> = ({
     </button>
   );
 
-  const connectButton = <WalletMultiButton className={ctaWideButtonStyle} />;
+  const connectButton = <WalletMultiButton className={selectWalletStyle} />;
 
   const installPhantom = (
     <div className="flex flex-row space-x-2">
@@ -74,7 +74,7 @@ export const BuyInkSlider: React.FC<BuyInkSliderProps> = ({
       <a
         href="https://phantom.app/"
         target="_blank"
-        rel="nofollow"
+        rel="noreferrer"
         className={phantomButtonStyle}
       >
         Install Phantom wallet
@@ -149,10 +149,19 @@ const moreWalletsButtonStyle = createButtonStyle({
   className: "overflow-hidden relative",
 });
 
+const selectWalletStyle = createButtonStyle({
+  outline: true,
+  color: "indigo",
+  className: `
+    w-full sm:w-fit
+    font-bold text-lg sm:text-base
+  `,
+});
+
 const ctaWideButtonStyle = createButtonStyle({
-  color: "amber",
+  color: "indigo",
   className: `
     w-full sm:w-fit 
-    font-bold text-zinc-900 text-lg sm:text-base
+    font-bold text-lg sm:text-base
   `,
 });

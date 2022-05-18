@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import { ExternalLinkIcon } from "@heroicons/react/solid";
 
 import { CharitySummary } from "../../../data/charities-list";

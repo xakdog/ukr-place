@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { ChevronDownIcon } from "@heroicons/react/solid";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/solid";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 import { useCollapsingBlock } from "./use-collapsing-block";
@@ -76,6 +76,12 @@ const FullContent: React.FC<{
           {displayBalance} mL of ink
         </h3>
         {showWalletButton && <WalletMultiButton className={buttonStyle} />}
+        {!showWalletButton && (
+          <ChevronUpIcon
+            onClick={onClick}
+            className="h-7 w-7 ml-2 mt-px -mr-1 text-white opacity-60 cursor-pointer"
+          />
+        )}
       </div>
 
       <Explanation />
