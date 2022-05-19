@@ -1,21 +1,23 @@
-import {Vector} from "vecti";
-import {PixelChange, TileChange, UniqueKey} from "./pixel-changes.atom";
-import {hexPaletteMap, hexPaletteMapReverse} from "../components/palette-bar/palette-bar.colors";
+import { Vector } from "vecti";
+import { PixelChange, TileChange, UniqueKey } from "./pixel-changes.atom";
+import { hexPaletteMap, hexPaletteMapReverse } from "../data/canvas-colors";
 
 export const TILE_SIZE = 16;
-export const DEFAULT_COLOR = '#ffffff';
+export const DEFAULT_COLOR = "#ffffff";
 
 export type TileChangeReq = {
   tilePos: Vector;
   image: number[][];
 };
 
-const groupTileChanges = (syncing: Record<UniqueKey, PixelChange>): TileChangeReq[] => {
+const groupTileChanges = (
+  syncing: Record<UniqueKey, PixelChange>
+): TileChangeReq[] => {
   const groupedUpdates = Object.values(syncing)
-    .map(change => {
+    .map((change) => {
       const tilePos = new Vector(
         Math.floor(change.pos.x / 16),
-        Math.floor(change.pos.y / 16),
+        Math.floor(change.pos.y / 16)
       );
       const tilePosStr = `${tilePos.x}:${tilePos.y}`;
 
@@ -28,7 +30,7 @@ const groupTileChanges = (syncing: Record<UniqueKey, PixelChange>): TileChangeRe
       return grouped;
     }, {});
 
-  return Object.values(groupedUpdates).map(changes => {
+  return Object.values(groupedUpdates).map((changes) => {
     const tilePos = changes[0].tilePos;
     const zeroPoint = tilePos.multiply(16);
 
@@ -42,15 +44,14 @@ const groupTileChanges = (syncing: Record<UniqueKey, PixelChange>): TileChangeRe
     }
 
     return { tilePos, image };
-  })
+  });
 };
 
 const colorsArrayToImage = (colorsArray: number[][], tilePos: Vector) => {
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
 
-  if (!ctx)
-    throw new Error('No canvas context');
+  if (!ctx) throw new Error("No canvas context");
 
   canvas.height = TILE_SIZE;
   canvas.width = TILE_SIZE;
@@ -58,18 +59,22 @@ const colorsArrayToImage = (colorsArray: number[][], tilePos: Vector) => {
   const pos = tilePos.multiply(TILE_SIZE);
   const size = new Vector(TILE_SIZE, TILE_SIZE);
 
-  return new Promise<TileChange | null>(resolve => {
+  return new Promise<TileChange | null>((resolve) => {
     const previewChanges = colorsArray.flatMap((row, y) =>
-      row.map((colorId, x) =>
-        ({ x, y, color: hexPaletteMapReverse[colorId] || DEFAULT_COLOR })));
+      row.map((colorId, x) => ({
+        x,
+        y,
+        color: hexPaletteMapReverse[colorId] || DEFAULT_COLOR,
+      }))
+    );
 
-    previewChanges.forEach(change => {
+    previewChanges.forEach((change) => {
       ctx.fillStyle = change.color;
       ctx.fillRect(change.x, change.y, 1, 1);
     });
 
-    canvas.toBlob(data => {
-      const change = data ? { data, pos, size } as TileChange : null;
+    canvas.toBlob((data) => {
+      const change = data ? ({ data, pos, size } as TileChange) : null;
       resolve(change);
     });
     canvas.remove();

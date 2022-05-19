@@ -18,3 +18,35 @@ a {
 * {
   box-sizing: border-box;
 }
+
+
+@layer components {
+  .range {
+    @apply
+      w-full h-3 accent-amber-500 border-0 bg-amber-400/80 rounded-full appearance-none;
+  }
+
+  .range::-webkit-slider-thumb {
+    @apply h-6 w-6 rounded-full appearance-none cursor-pointer bg-amber-500 ring-4 ring-amber-500/20;
+  }
+  .range::-moz-range-thumb {
+    @apply h-6 w-6 rounded-full appearance-none cursor-pointer bg-amber-500 ring-4 ring-amber-500/20;
+  }
+  .range::-ms-thumb {
+    @apply h-6 w-6 rounded-full appearance-none cursor-pointer bg-amber-500 ring-4 ring-amber-500/20;
+  }
+}
+
+@layer components {
+  /* Chrome, Safari, Edge, Opera */
+  input.no-number-arrows::-webkit-outer-spin-button,
+  input.no-number-arrows::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input.no-number-arrows {
+    -moz-appearance: textfield;
+  }
+}
