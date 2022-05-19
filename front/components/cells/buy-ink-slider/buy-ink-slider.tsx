@@ -87,6 +87,7 @@ export const BuyInkSlider: React.FC<BuyInkSliderProps> = ({
       <h3 className="text-2xl font-bold leading-6 text-gray-900 text-center">
         <ContentWidthInput
           type="number"
+          min={1}
           value={isNaN(ml) ? "" : ml}
           onChange={onInputChange}
           maxLength={7}
