@@ -9,7 +9,7 @@ import { FormattedPrice } from "../../molecules/formatted-price/formatted-price"
 import { ContentWidthInput } from "../../molecules/content-width-input/content-width-input";
 import { RangeSelector } from "../../molecules/range-selector/range-selector";
 import { CharitySummary } from "../../../data/charities-list";
-import { WalletContext } from "../../wallet-program/wallet-program";
+import { WalletContext } from "../../service/wallet-program/wallet-program";
 import {
   BuyInkError,
   BuyInkErrorProps,

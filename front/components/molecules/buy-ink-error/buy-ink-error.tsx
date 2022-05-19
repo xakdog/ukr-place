@@ -1,5 +1,5 @@
 import React from "react";
-import { BuyInkErrors } from "../../wallet-program/use-wallet-ink";
+import { BuyInkErrors } from "../../service/wallet-program/use-wallet-ink";
 
 export type BuyInkErrorProps = {
   type: BuyInkErrors;

@@ -8,7 +8,7 @@ import {
   wheelAction,
 } from "@use-gesture/react";
 
-import { canvasPosState } from "../../state/canvas-pos.atom";
+import { canvasPosState } from "../../../state/canvas-pos.atom";
 
 type canvasNavArgs = {
   onClick(): void;

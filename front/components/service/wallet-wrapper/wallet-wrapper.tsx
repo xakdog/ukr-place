@@ -1,5 +1,5 @@
-import React, {useMemo} from "react";
-import {clusterApiUrl} from "@solana/web3.js";
+import React, { useMemo } from "react";
+import { clusterApiUrl } from "@solana/web3.js";
 import {
   LedgerWalletAdapter,
   PhantomWalletAdapter,
@@ -8,10 +8,13 @@ import {
   SolletExtensionWalletAdapter,
   SolletWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
-import {WalletAdapterNetwork} from "@solana/wallet-adapter-base";
-import {WalletModalProvider} from "@solana/wallet-adapter-react-ui";
-import {ConnectionProvider, WalletProvider} from "@solana/wallet-adapter-react";
-import {WalletContextProvider} from "../wallet-program/wallet-program";
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
+import {
+  ConnectionProvider,
+  WalletProvider,
+} from "@solana/wallet-adapter-react";
+import { WalletContextProvider } from "../wallet-program/wallet-program";
 
 export const WalletWrapper: React.FC = (props) => {
   // The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
@@ -35,13 +38,15 @@ export const WalletWrapper: React.FC = (props) => {
     [network]
   );
 
-  return <ConnectionProvider endpoint={endpoint}>
-    <WalletProvider wallets={wallets} autoConnect>
-      <WalletModalProvider>
-        <WalletContextProvider network={network}>
-          {props.children}
-        </WalletContextProvider>
-      </WalletModalProvider>
-    </WalletProvider>
-  </ConnectionProvider>;
+  return (
+    <ConnectionProvider endpoint={endpoint}>
+      <WalletProvider wallets={wallets} autoConnect>
+        <WalletModalProvider>
+          <WalletContextProvider network={network}>
+            {props.children}
+          </WalletContextProvider>
+        </WalletModalProvider>
+      </WalletProvider>
+    </ConnectionProvider>
+  );
 };

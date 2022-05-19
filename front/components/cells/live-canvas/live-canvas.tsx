@@ -1,16 +1,16 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import {
   PixelChange,
   TileChange,
-  UniqueKey
-} from "../../state/pixel-changes.atom";
+  UniqueKey,
+} from "../../../state/pixel-changes.atom";
 
 export const IMAGE_WIDTH = 1280;
 export const IMAGE_HEIGHT = 912;
 
 export type AllCanvasUpdates = {
-  tiles?: Record<UniqueKey, TileChange>,
-  pixels?: Record<UniqueKey, PixelChange>,
+  tiles?: Record<UniqueKey, TileChange>;
+  pixels?: Record<UniqueKey, PixelChange>;
 };
 
 type LiveCanvasProps = {
@@ -30,14 +30,13 @@ const LiveCanvas: React.FC<LiveCanvasProps> = ({ updates, onUpdateDone }) => {
     if (!ctx) return;
     if (isUpdating) return;
 
-    if (!updatedTiles?.length && updatedPixels == null)
-      return;
+    if (!updatedTiles?.length && updatedPixels == null) return;
 
     const runUpdates = async () => {
       setIsUpdating(true);
 
       if (updatedTiles && updatedTiles.length > 0) {
-        const updatesPromises = updatedTiles.map(async upd => {
+        const updatesPromises = updatedTiles.map(async (upd) => {
           const image = await deserialize(upd.data);
           ctx.drawImage(image, upd.pos.x, upd.pos.y);
         });
@@ -48,7 +47,7 @@ const LiveCanvas: React.FC<LiveCanvasProps> = ({ updates, onUpdateDone }) => {
 
       if (updatedPixels != null) {
         ctx.clearRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
-        updatedPixels.forEach(change => {
+        updatedPixels.forEach((change) => {
           ctx.fillStyle = change.color;
           ctx.fillRect(change.pos.x, change.pos.y, 1, 1);
         });
@@ -58,23 +57,24 @@ const LiveCanvas: React.FC<LiveCanvasProps> = ({ updates, onUpdateDone }) => {
       setIsUpdating(false);
     };
 
-    runUpdates()
-      .catch(console.error);
+    runUpdates().catch(console.error);
   }, [isUpdating, canvasRef.current, updatedTiles, updatedPixels]);
 
-  return <canvas
-    className="absolute top-0 left-0"
-    height={IMAGE_HEIGHT}
-    width={IMAGE_WIDTH}
-    ref={canvasRef}
-    style={{ imageRendering: 'pixelated' }}
-  />;
+  return (
+    <canvas
+      className="absolute top-0 left-0"
+      height={IMAGE_HEIGHT}
+      width={IMAGE_WIDTH}
+      ref={canvasRef}
+      style={{ imageRendering: "pixelated" }}
+    />
+  );
 };
 
 function deserialize(data: Blob): Promise<HTMLImageElement> {
   const img = new Image();
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     img.onload = () => resolve(img);
     img.src = URL.createObjectURL(data);
   });

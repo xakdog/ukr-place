@@ -1,5 +1,5 @@
 import { useContext, useMemo } from "react";
-import { WalletContext } from "../../wallet-program/wallet-program";
+import { WalletContext } from "../wallet-program/wallet-program";
 
 export const useSolanaExplorerTx = (tx: string) => {
   const { network } = useContext(WalletContext);

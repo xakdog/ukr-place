@@ -10,7 +10,7 @@ import {
 } from "@solana/web3.js";
 
 import { WalletProgram } from "./use-wallet-program";
-import UkrPlace from "../../types/idl/ukr_place.json";
+import UkrPlace from "../../../types/idl/ukr_place.json";
 
 export enum InkWalletStatus {
   DOES_NOT_EXIST = "does-not-exist",

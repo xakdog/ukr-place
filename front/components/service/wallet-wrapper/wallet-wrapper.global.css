@@ -201,7 +201,7 @@
     max-width: 400px;
     border-radius: 10px;
     background: #10141f;
-    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
     font-family: 'DM Sans', 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     flex: 1;
 }

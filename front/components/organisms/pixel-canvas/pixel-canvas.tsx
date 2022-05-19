@@ -2,38 +2,21 @@ import React, { useCallback, useMemo, useRef } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import Image from "next/image";
 
-import { useHeightCssVar } from "./useHeightCssVar";
-import { useCanvasNav } from "./useCanvasNav";
+import { useHeightCssVar } from "./use-height-css-var";
+import { useCanvasNav } from "./use-canvas-nav";
 import styles from "./pixel-canvas.module.css";
 
 import LiveCanvas, {
   AllCanvasUpdates,
   IMAGE_HEIGHT,
   IMAGE_WIDTH,
-} from "../live-canvas/live-canvas";
-import { paletteColorState } from "../palette-bar/palette-bar";
-import { canvasPosState } from "../../state/canvas-pos.atom";
+} from "../../cells/live-canvas/live-canvas";
+import { paletteColorState } from "../../cells/palette-bar/palette-bar";
+import { canvasPosState } from "../../../state/canvas-pos.atom";
 import {
   pixelChangesActions,
   pixelChangesState,
-} from "../../state/pixel-changes.atom";
-
-const PlacedPixel: React.FC = () => {
-  const color = useRecoilValue(paletteColorState);
-  const pos = useRecoilValue(canvasPosState);
-
-  const opacity = pos.outOfBounds ? 0 : 1;
-  const transform = `translate(${pos.vector.x}px, ${pos.vector.y}px)`;
-
-  if (color === "transparent") return null;
-
-  return (
-    <div
-      className={styles.pixel}
-      style={{ opacity, transform, backgroundColor: color }}
-    />
-  );
-};
+} from "../../../state/pixel-changes.atom";
 
 const PixelCanvas: React.FC<{ onClick(): void }> = ({ onClick }) => {
   const imgRef = useRef<HTMLDivElement | null>(null);
@@ -79,6 +62,23 @@ const PixelCanvas: React.FC<{ onClick(): void }> = ({ onClick }) => {
         <LiveCanvas updates={userPixelUpdates} />
       </div>
     </div>
+  );
+};
+
+const PlacedPixel: React.FC = () => {
+  const color = useRecoilValue(paletteColorState);
+  const pos = useRecoilValue(canvasPosState);
+
+  const opacity = pos.outOfBounds ? 0 : 1;
+  const transform = `translate(${pos.vector.x}px, ${pos.vector.y}px)`;
+
+  if (color === "transparent") return null;
+
+  return (
+    <div
+      className={styles.pixel}
+      style={{ opacity, transform, backgroundColor: color }}
+    />
   );
 };
 

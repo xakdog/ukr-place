@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useWalletProgram, WalletProgram } from "./use-wallet-program";
-import { useWalletInk } from "./use-wallet-ink";
-import { PixelSync } from "../pixel-sync/pixel-sync";
-import { CanvasSyncer } from "../live-canvas/canvas-syncer";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+
+import { useWalletInk } from "./use-wallet-ink";
+import { useWalletProgram, WalletProgram } from "./use-wallet-program";
+import { PixelSync } from "../pixel-sync/pixel-sync";
+import { CanvasUpdatesSolana } from "../canvas-updates/canvas-updates-solana";
 
 export type WalletProps = {
   network: WalletAdapterNetwork;
@@ -42,7 +43,7 @@ export const WalletContextProvider: React.FC<{
 
       {ctx && <PixelSync ctx={ctx} refreshInk={ink.refresh} />}
 
-      <CanvasSyncer />
+      <CanvasUpdatesSolana />
     </WalletContext.Provider>
   );
 };

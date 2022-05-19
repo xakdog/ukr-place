@@ -3,9 +3,9 @@ import type { NextPage } from "next";
 import Head from "next/head";
 
 import IntroPopup from "../components/organisms/intro-popup/intro-popup";
-import InkWalletPanel from "../components/ink-wallet-panel/ink-wallet-panel";
-import PixelCanvas from "../components/pixel-canvas/pixel-canvas";
-import { FooterActions } from "../components/footer-actions/footer-actions";
+import PixelCanvas from "../components/organisms/pixel-canvas/pixel-canvas";
+import { FooterActions } from "../components/organisms/footer-actions/footer-actions";
+import InkWalletPanel from "../components/organisms/ink-wallet-panel/ink-wallet-panel";
 
 const Home: NextPage = () => {
   const [isEditing, setIsEditing] = useState(true);

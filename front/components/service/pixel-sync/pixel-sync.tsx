@@ -1,14 +1,29 @@
-import React, {useEffect} from "react";
-import {useRecoilState} from "recoil";
-import {Vector} from "vecti";
-import {Keypair, PublicKey, SystemProgram, Transaction} from "@solana/web3.js";
+import React, { useEffect } from "react";
+import { useRecoilState } from "recoil";
+import { Vector } from "vecti";
+import {
+  Keypair,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
 
-import {pixelChangesActions, pixelChangesState, PixelSyncStatus} from "../../state/pixel-changes.atom";
+import {
+  pixelChangesActions,
+  pixelChangesState,
+  PixelSyncStatus,
+} from "../../../state/pixel-changes.atom";
 
-import {WalletProgram} from "../wallet-program/use-wallet-program";
-import {pixelChangesTransform, TileChangeReq} from "../../state/pixel-changes.transform";
+import { WalletProgram } from "../wallet-program/use-wallet-program";
+import {
+  pixelChangesTransform,
+  TileChangeReq,
+} from "../../../state/pixel-changes.transform";
 
-export const PixelSync: React.FC<{ ctx: WalletProgram; refreshInk(): void; }> = ({ ctx, refreshInk }) => {
+export const PixelSync: React.FC<{
+  ctx: WalletProgram;
+  refreshInk(): void;
+}> = ({ ctx, refreshInk }) => {
   const [state, setState] = useRecoilState(pixelChangesState);
 
   useEffect(() => {
@@ -19,9 +34,13 @@ export const PixelSync: React.FC<{ ctx: WalletProgram; refreshInk(): void; }> = 
       const keysToUpdate = Object.keys(state.syncing);
       const changeReqs = pixelChangesTransform.groupTileChanges(state.syncing);
 
-      setState(pixelChangesActions.setStatus(PixelSyncStatus.AWAITING_CONFIRMATION));
+      setState(
+        pixelChangesActions.setStatus(PixelSyncStatus.AWAITING_CONFIRMATION)
+      );
       await anchor.syncTiles(ctx, changeReqs);
-      setState(pixelChangesActions.setStatus(PixelSyncStatus.CHANGES_CONFIRMED));
+      setState(
+        pixelChangesActions.setStatus(PixelSyncStatus.CHANGES_CONFIRMED)
+      );
 
       refreshInk();
       setState(pixelChangesActions.cleanSyncing(keysToUpdate));
@@ -29,22 +48,23 @@ export const PixelSync: React.FC<{ ctx: WalletProgram; refreshInk(): void; }> = 
 
     runSync()
       .catch(console.error)
-      .finally(() => setState(pixelChangesActions.setStatus(PixelSyncStatus.ACCEPTING_CHANGES)));
+      .finally(() =>
+        setState(
+          pixelChangesActions.setStatus(PixelSyncStatus.ACCEPTING_CHANGES)
+        )
+      );
   }, [state, ctx.inkWallet, state.syncStatus, refreshInk]);
-
 
   return null;
 };
 
-type TileData =  { pixels: number[][], position: { x: number; y: number; } };
+type TileData = { pixels: number[][]; position: { x: number; y: number } };
 
 const anchor = {
   syncTiles: async (ctx: WalletProgram, changes: TileChangeReq[]) => {
     const changesWithPda = await Promise.all(
-      changes.map(change =>
-        anchor
-          .findPda(ctx, change.tilePos)
-          .then(pda => ({ ...change, pda }))
+      changes.map((change) =>
+        anchor.findPda(ctx, change.tilePos).then((pda) => ({ ...change, pda }))
       )
     );
 
@@ -76,13 +96,18 @@ const anchor = {
 
   findPda: async (ctx: WalletProgram, pos: Vector) => {
     const seed = new TextEncoder().encode(`canvas-tile-${pos.x}:${pos.y}`);
-    const [pda, bump] = await PublicKey.findProgramAddress([seed], ctx.ukrPlace.id);
+    const [pda, _bump] = await PublicKey.findProgramAddress(
+      [seed],
+      ctx.ukrPlace.id
+    );
 
     return pda;
   },
 
   getTiles: async (ctx: WalletProgram, pdas: PublicKey[]) => {
-    const res = await ctx.canvasTile.program.account.canvasTile.fetchMultiple(pdas);
+    const res = await ctx.canvasTile.program.account.canvasTile.fetchMultiple(
+      pdas
+    );
 
     return pdas
       .map((pda, idx) => ({ pda, tile: res[idx] }))
@@ -117,7 +142,12 @@ const anchor = {
       .instruction();
   },
 
-  paintPixelsIx: async (ctx: WalletProgram, pda: PublicKey, pos: Vector, image: number[][]) => {
+  paintPixelsIx: async (
+    ctx: WalletProgram,
+    pda: PublicKey,
+    pos: Vector,
+    image: number[][]
+  ) => {
     return ctx.ukrPlace.program.methods
       .paintPixels(pos as any, image as any)
       .accounts({

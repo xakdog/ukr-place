@@ -1,7 +1,7 @@
 import { useCallback, useContext, useMemo, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 
-import { WalletContext } from "../../wallet-program/wallet-program";
+import { WalletContext } from "../../service/wallet-program/wallet-program";
 import { BuyInkErrorProps } from "../../molecules/buy-ink-error/buy-ink-error";
 
 export const useBuyInk = ({ solPerMl }: { solPerMl: number }) => {

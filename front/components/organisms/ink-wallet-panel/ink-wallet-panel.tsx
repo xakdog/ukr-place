@@ -4,10 +4,10 @@ import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/solid";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 import { useCollapsingBlock } from "./use-collapsing-block";
-import { WalletContext } from "../wallet-program/wallet-program";
-import { BuyInkPopup } from "../organisms/buy-ink-popup/buy-ink-popup";
-import { ExternalLink } from "../molecules/external-link/external-link";
-import { createButtonStyle } from "../molecules/button/button";
+import { WalletContext } from "../../service/wallet-program/wallet-program";
+import { ExternalLink } from "../../molecules/external-link/external-link";
+import { createButtonStyle } from "../../molecules/button/button";
+import { BuyInkPopup } from "../buy-ink-popup/buy-ink-popup";
 
 const isScreenSmall = () =>
   typeof window === "object" && window.innerWidth < 640;

@@ -8,8 +8,8 @@ import {
   useConnection,
 } from "@solana/wallet-adapter-react";
 
-import UkrPlace from "../../types/idl/ukr_place.json";
-import CanvasTile from "../../types/idl/canvas_tile.json";
+import UkrPlace from "../../../types/idl/ukr_place.json";
+import CanvasTile from "../../../types/idl/canvas_tile.json";
 
 export type WalletProgram = {
   provider: AnchorProvider;
