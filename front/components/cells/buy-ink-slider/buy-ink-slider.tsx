@@ -92,8 +92,8 @@ export const BuyInkSlider: React.FC<BuyInkSliderProps> = ({
           onChange={onInputChange}
           maxLength={7}
           className="
-            px-2 font-bold appearance-none ring-2 ring-amber-400 rounded text-center
-            focus:outline-none focus:ring-amber-500
+            px-2 font-bold appearance-none ring-2 ring-zinc-100 rounded text-center
+            focus:outline-none focus:ring-zinc-200
             no-number-arrows
           "
         />
