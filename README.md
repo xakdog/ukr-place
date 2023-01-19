@@ -20,3 +20,6 @@ Smart contract developed with [Solana blockchain](https://solana.com/). Reasons:
 ## Installing Dependencies
 
 Check out [article from Anchor](https://project-serum.github.io/anchor/getting-started/installation.html)
+
+
+<img width="1249" alt="image" src="https://user-images.githubusercontent.com/17473315/213570750-1884fe10-efac-4ca1-9072-db41366ac62e.png">
